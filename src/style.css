@@ -1,7 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 body {
   margin: 0;
  display: flex;
  place-items: center;
  min-width: 320px;
  min-height: 100px;
+}
+
+.start-button {
+  background: linear-gradient(to right, #f0e68c, #ffa500);
+  color: #333;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+.start-button:hover {
+  background: linear-gradient(to right, #ffa500, #f0e68c);
+}
+
+/* Animations */
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-15px); }
+}
+
+.animate-bounce {
+  animation: bounce 2s infinite;
 }

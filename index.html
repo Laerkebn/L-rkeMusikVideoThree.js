@@ -1,12 +1,32 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>tree-jstest</title>
-  </head>
-  <body>
-    <script type="module" src="/src/main.js"></script>
-  </body>
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forside</title>
+  <!-- Tailwind via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex justify-center items-center min-h-screen bg-gradient-to-b from-[#F4F3E8] to-[#CFCAC0] font-sans">
+
+  <div class="menu-container flex flex-col items-center p-10 rounded-3xl shadow-2xl bg-white/90 backdrop-blur-md max-w-lg text-center">
+    
+    <h1 class="text-5xl sm:text-6xl font-extrabold mb-6 text-[#333] animate-bounce">Forside</h1>
+
+    <p class="text-lg sm:text-xl text-gray-700 mb-8">Klar til at starte spillet? Tryk på knappen herunder!</p>
+
+    <button id="startBtn" class="bg-gradient-to-r from-[#34D399] to-[#10B981] hover:from-[#10B981] hover:to-[#34D399] text-white font-bold px-10 py-4 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105">
+      Start spil
+    </button>
+
+    <img src="gif/haze.gif" alt="Ældre kvinde med cigar" class="w-100 sm:w-96 mt-8 rounded-2xl shadow-lg border-4 border-white">
+  </div>
+
+  <script>
+    document.getElementById('startBtn').onclick = () => {
+      window.location.href = 'spil.html';
+    };
+  </script>
+
+</body>
 </html>
