@@ -2,6 +2,8 @@ import './style.css';
 import * as THREE from 'three';
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import Sound from './sound.js';
+
 
 //Scene
 const scene = new THREE.Scene();
@@ -35,10 +37,10 @@ loaderBagrund.load('/Billeder/nattehimmel.jpg', function (texture) {
   scene.add(skySphere);
   window.skySphere = skySphere; 
 });
-//byen
-const loadercity = new GLTFLoader();
 
-loadercity.load('modeler/city.glb', (gltf) => {
+//byen
+const loaderCity = new GLTFLoader();
+loaderCity.load('modeler/city.glb', (gltf) => {
   const city = gltf.scene;
   city.scale.set(1, 1, 1);     
   city.position.set(5, 1, -40);
@@ -47,7 +49,7 @@ loadercity.load('modeler/city.glb', (gltf) => {
   // Lav en kopi
   const city2 = city.clone();
 
-  // Spejlvendt: roter 180° omkring y-aksen
+  //Roter 180° omkring y-aksen
   city2.rotation.y = Math.PI; // 180 grader
 
   // Flyt den nye by i forlængelse af den første
@@ -56,6 +58,81 @@ loadercity.load('modeler/city.glb', (gltf) => {
 
 }, undefined, (error) => {
   console.error('Error loading city:', error);
+});
+
+//Club
+const loaderClub = new GLTFLoader();
+loaderClub.load('modeler/club.glb', (gltf) => {
+  const club = gltf.scene;
+  club.scale.set(0.01, 0.01, 0.01);     
+  club.position.set(-0, 1, 2);
+  scene.add(club);
+
+  //Roter 180° omkring y-aksen
+  club.rotation.y = Math.PI; // 180 grader
+}, undefined, (error) => {
+  console.error('Error loading club:', error);
+});
+
+
+//fence
+const loaderFence = new GLTFLoader();
+loaderFence.load('modeler/fence.glb', (gltf) => {
+  const fence = gltf.scene;
+  fence.scale.set(0.03, 0.03, 0.03);
+  fence.position.set(9, 1, 2.4);
+  scene.add(fence);
+//Roter 90° omkring y-aksen
+  fence.rotation.y = Math.PI / 2; 
+}, 
+undefined, (error) => {
+  console.error('Error loading fence:', error);
+}); 
+
+//wall
+const loaderWall = new GLTFLoader();
+loaderWall.load('modeler/wall.glb', (gltf) => {
+  const wall = gltf.scene;
+  wall.scale.set(5, 10, 5);
+  wall.position.set(50, 0, 15);
+  scene.add(wall);
+  
+  //Roter 90° omkring y-aksen
+  wall.rotation.y = Math.PI / 2;
+  
+  // Lav en kopi
+  const wall2 = wall.clone();
+  wall2.position.set(50, 40, 15);
+  scene.add(wall2);
+  //roter 90° omkring x-aksen
+  wall2.rotation.x = Math.PI;
+}, undefined, (error) => {
+  console.error('Error loading wall:', error);
+});
+
+//lillehegn 
+const loaderHegn = new GLTFLoader();
+loaderHegn.load('modeler/lillehegn.glb', (gltf) => {
+  const lillehegn = gltf.scene;
+  lillehegn.scale.set(1.8, 1.4, 1.5);
+  lillehegn.position.set(1.2, 1, 0.9);
+  scene.add(lillehegn);
+}, undefined, (error) => {
+  console.error('Error loading lillehegn:', error);
+});
+
+//vagt
+const loaderVagt = new GLTFLoader();
+loaderVagt.load('modeler/vagt.glb', (gltf) => {
+  const vagt = gltf.scene;
+  vagt.scale.set(1.8, 1.4, 1.5);
+  vagt.position.set(0, 1, 2);
+  scene.add(vagt);
+
+  //Roter 180° omkring y-aksen
+  vagt.rotation.y = Math.PI; 
+}, undefined, (error) => {
+  console.error('Error loading vagt:', error);
 });
 // Grid
 const gridHelper = new THREE.GridHelper(100, 100);
@@ -123,10 +200,34 @@ window.addEventListener('resize', () => {
 
 // Spiller kontrol (kun fremad)
 window.addEventListener('keydown', (event) => {
-  if(event.key === 'ArrowUp') {
-    spiller.position.z -= 2;
+  if(event.key === ' ' || event.key === 'Space') {
+    spiller.position.z -= 0.1;
   }
 });
+
+// Lyd setup
+const soundFarve = new Sound(camera);    // den primære lyd
+soundFarve.loadSound('/lyd/farve.mp3');
+
+const soundGraa = new Sound(camera);      // den alternative lyd
+soundGraa.loadSound('/lyd/graa.mp3');
+
+// Når man trykker space → spil farve, stop grå
+window.addEventListener('keydown', (event) => {
+  if (event.code === 'Space') {
+    soundGraa.pauseSound();
+    soundFarve.playSound();
+  }
+});
+
+// Når man slipper space → stop farve, spil grå
+window.addEventListener('keyup', (event) => {
+  if (event.code === 'Space') {
+    soundFarve.pauseSound();
+    soundGraa.playSound();
+  }
+});
+
 
 // Animation
 function animate() {
