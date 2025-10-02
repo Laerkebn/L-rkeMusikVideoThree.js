@@ -1,5 +1,6 @@
+
 {
-  "name": "L-rkeMusikVideoThree.js",
+  "name": "laerke-musikvideo-threejs",
   "version": "1.0.0",
   "dependencies": {
     "three": "^0.158.0"

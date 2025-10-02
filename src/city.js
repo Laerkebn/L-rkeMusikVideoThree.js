@@ -25,11 +25,13 @@ export function loadCity(scene) {
     const city = gltf.scene;
     city.scale.set(1, 1, 1);
     city.position.set(5, 1, -40);
+    
     scene.add(city);
 
     const city2 = city.clone();
     city2.rotation.y = Math.PI;
     city2.position.set(-4.8, 1, -116);
+    
     scene.add(city2);
   });
 
@@ -40,6 +42,7 @@ export function loadCity(scene) {
     building.scale.set(2, 2, 2);
     building.position.set(20, -35, 5);
     building.rotation.y = Math.PI;
+
     scene.add(building);
   });
 
@@ -50,6 +53,7 @@ export function loadCity(scene) {
     club.scale.set(0.01, 0.01, 0.01);
     club.position.set(-0, 1, 2);
     club.rotation.y = Math.PI;
+
     scene.add(club);
   });
 
@@ -60,8 +64,9 @@ export function loadCity(scene) {
     fence.scale.set(0.03, 0.03, 0.03);
     fence.position.set(9, 1, 2.4);
     fence.rotation.y = Math.PI / 2;
-    scene.add(fence);
-  });
+
+  scene.add(fence);
+});
 
   // Lille hegn
   const loaderHegn = new GLTFLoader();
@@ -69,7 +74,14 @@ export function loadCity(scene) {
     const lillehegn = gltf.scene;
     lillehegn.scale.set(1.8, 1.4, 1.5);
     lillehegn.position.set(1.2, 1, 0.9);
-    scene.add(lillehegn);
+
+  lillehegn.traverse((child) => {
+    if (child.isMesh) {
+      child.material = new THREE.MeshPhongMaterial({ color: 0x439bc4 });
+    }
+  });
+
+scene.add(lillehegn);
   });
 
   // Vagt
@@ -80,9 +92,10 @@ export function loadCity(scene) {
     vagt.position.set(0, 1, 2);
     vagt.rotation.y = Math.PI;
     scene.add(vagt);
+
   });
 
-  // Grid
-  const gridHelper = new THREE.GridHelper(100, 100);
-  scene.add(gridHelper);
+  // Grid 
+  // const gridHelper = new THREE.GridHelper(100, 100);
+  //scene.add(gridHelper);
 }

@@ -1,11 +1,39 @@
-<!-- spil.html -->
 <!DOCTYPE html>
-<html lang="da">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Spillet</title>
+  <title>The Game</title>
+  <script src="https://cdn.tailwindcss.com"></script> <!-- Tailwind klasser -->
 </head>
-<body>
+<body class="relative">
+
+  <!-- Canvas og spil bliver sat ind af main.js -->
+
+  <!-- Popup med regler 
+  <div id="popup" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+    <div class="bg-gray-500 p-8 rounded-2xl max-w-lg text-center shadow-xl">
+      <h2 class="text-2xl text-gray-700 font-bold mb-4">How to play</h2>
+      <ul class="text-left list-disc list-inside mb-6 text-gray-700">
+        <li>Press <span class="font-semibold">space</span> to move forward</li>
+        <li>Release space to stop moving</li>
+        <li>Take a pill to alter the experience</li>
+        <li>(Remember, you can only move forward)</li>
+      </ul>
+      <button id="closePopup" class="text-gray-500 font-bold py-2 px-6 rounded-lg hover:scale-105 transition">
+        Okay, I understand!
+      </button>
+    </div>
+  </div>
+-->
+  <!-- Loader dit spil -->
+   <!-- mellemrumsknaps tæller -->
+<div id="spaceCounter" 
+     style="position: fixed; top: 10px; right: 10px; 
+            background: rgba(0,0,0,0.6); color: #fff; 
+            padding: 8px 12px; border-radius: 8px; 
+            font-family: sans-serif; font-weight: bold; z-index: 100;">
+  Space presses: 0
+</div>
   <script type="module" src="/src/main.js"></script>
 </body>
 </html>

@@ -5,35 +5,36 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import Sound from './sound.js';
 import { loadCity } from './city.js';
 import { loadPerson } from './spiller.js';
+import GUI from 'three/examples/jsm/libs/lil-gui.module.min.js';
+import { loadLys } from './lys.js';
+import { happyLys } from './happy.js';
 
+// Renderer
+const renderer = new THREE.WebGLRenderer();
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement); 
 
 // Scene
 const scene = new THREE.Scene();
 
 // kamera
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.set(0, 1.5, 5);
 
-// lys
-const ambientLight = new THREE.AmbientLight(0x7393B3, 1); 
-scene.add(ambientLight);
+//popup
+//const popup = document.getElementById("popup");
 
-const directionalLight = new THREE.DirectionalLight(0xffffff, 2);
-directionalLight.position.set(10, 10, 10);
-scene.add(directionalLight);
+//popup.querySelector("#closePopup").addEventListener("click", () => {
+//popup.style.display = "none";
+//});
 
-// Renderer
-const renderer = new THREE.WebGLRenderer();
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
-
+// lys 
+loadLys(scene);
 // Tilføj byen + baggrund + objekter
 loadCity(scene);
 
-
 //tilføj spiller og hænder
 const spiller = loadPerson(scene, camera);
-
-let isSpacePressed = false;
 
 // PointerLockControls
 const controls = new PointerLockControls(camera, renderer.domElement);
@@ -48,27 +49,6 @@ window.addEventListener('resize', () => {
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
-// Spiller kontrol (kun fremad)
-let hastighed = 0
-const maxHastighed = 0.05; // Maksimal hastighed
-const acceleration = 0.01; // Acceleration pr. frame
-window.addEventListener('keydown', (event) => {
-  if(event.key === ' ' || event.key === 'Space') {
-    isSpacePressed = true;
-    hastighed += acceleration;
-    hastighed = Math.min(hastighed, maxHastighed); // Maks hastighed
-  };
-});
-
-// Når man slipper space → stop farvelyd, spil grålyd
-window.addEventListener('keyup', (event) => {
-  if (event.code === 'Space') {
-    isSpacePressed = false;
-    soundFarve.pauseSound();
-    soundGraa.playSound();
-    hastighed = 0; // stop
-  }
-});
 
 // Lyd setup
 const soundFarve = new Sound(camera);  // den primære lyd
@@ -77,11 +57,60 @@ soundFarve.loadSound('/lyd/farve.mp3');
 const soundGraa = new Sound(camera);   // den alternative lyd
 soundGraa.loadSound('/lyd/graa.mp3');
 
-// Når man trykker space → spil farve, stop grå
+// Mellemrums events:
+let spaceCount = 0;
+let isSpacePressed = false;
+let hastighed = 0;
+let activeHappyLights = [];
+const maxHastighed = 0.07; // Maksimal hastighed
+const acceleration = 0.01; // Acceleration pr. frame
+const maxSpace = 10;
+const counterDiv = document.getElementById("spaceCounter");
+
+// Hvis keydown klikkes:
 window.addEventListener('keydown', (event) => {
-  if (event.code === 'Space') {
+  if(event.code === 'Space' && !event.repeat) {
+
+    // Sæt karakter til at bevæge sig
+    isSpacePressed = true;
+
+    // Opdater tæller (+1) for hvert klik
+    if(spaceCount < maxSpace) {
+      spaceCount++;
+      counterDiv.textContent = `Space presses: ${spaceCount}`;
+    }
+
+    // Happy lys når space = 1
+    if(spaceCount === 1 && activeHappyLights.length === 0) {
+      activeHappyLights = happyLys(scene);
+    } 
+    // Fjern happy lys hvis spaceCount ikke længere = 1
+    else if(spaceCount !== 1 && activeHappyLights.length > 0) {
+      activeHappyLights.forEach(light => scene.remove(light));
+      activeHappyLights = [];
+    }
+
+    // Trigger special event hvis maxSpace er nået
+    if(spaceCount === maxSpace) {
+      triggerSpecialEvent();
+    }
+
+    // Musik
     soundGraa.pauseSound();
     soundFarve.playSound();
+  }
+});
+
+// Hvis keyup klikkes:
+window.addEventListener('keyup', (event) => {
+  if(event.code === 'Space') {
+    // Stop karakteren
+    isSpacePressed = false;
+    hastighed = 0;
+
+    // Musik
+    soundFarve.pauseSound();
+    soundGraa.playSound();
   }
 });
 
@@ -90,12 +119,18 @@ function animate() {
   requestAnimationFrame(animate);
 
   if (isSpacePressed) {
-    spiller.position.y = 1 + Math.sin(Date.now() * 0.01) * 0.05; // Let op og ned bevægelse 
+    // Acceleration: karakteren går hurtigere, når space holdes
+    hastighed += acceleration;
+    hastighed = Math.min(hastighed, maxHastighed);
+
+    // Bevæg karakter frem
+    spiller.position.z -= hastighed;
+
+    // Let op-ned bevægelse
+    spiller.position.y = 1 + Math.sin(Date.now() * 0.01) * 0.05;
   }
+
   // Kamera følger spilleren
-  spiller.position.z -= hastighed;
-  
-  //console.log(hastighed);
   camera.position.copy(spiller.position).add(new THREE.Vector3(0, 1.5, 0));
 
   // SkySphere følger spilleren, men roterer ikke

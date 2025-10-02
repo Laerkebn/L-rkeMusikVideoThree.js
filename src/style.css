@@ -31,3 +31,23 @@ body {
 .animate-bounce {
   animation: bounce 2s infinite;
 }
+
+#closePopup {
+  background-color: #3D4352; /* farven fra bg-gray-800 */
+  color: #6D727F; /* text-gray-500 */
+  transition: all 0.3s;
+}
+
+#closePopup:hover {
+  background: linear-gradient(270deg, red, orange, yellow, green, blue, indigo, violet);
+  background-size: 1400% 1400%;
+  animation: rainbow 3s linear infinite;
+  color: 6D727F; /* kan ændres hvis du vil */
+  transform: scale(1.05);
+}
+
+@keyframes rainbow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
