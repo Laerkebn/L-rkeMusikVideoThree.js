@@ -8,7 +8,7 @@ import { loadPerson } from './spiller.js';
 import GUI from 'three/examples/jsm/libs/lil-gui.module.min.js';
 import { loadLys } from './lys.js';
 import { happyLys } from './happy.js';
-
+import { setupKeyboard } from './knapper.js';
 // Renderer
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -49,6 +49,43 @@ window.addEventListener('resize', () => {
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
+// happy lys:
+ // Himmel
+    const color = 0x13fc03;
+    const intensity = 1;
+    const happysol1 = new THREE.DirectionalLight(color, intensity);
+    happysol1.position.set(5, 30, 10);
+    happysol1.target.position.set(10, 5, -30);
+    scene.add(happysol1);
+    scene.add(happysol1.target);
+
+    // Måne
+    const happyMåne1 = new THREE.DirectionalLight(0xeb1043, 10);
+    happyMåne1.position.set(20, 10, -40);
+    happyMåne1.target.position.set(10, 5, -30);
+    scene.add(happyMåne1);
+    scene.add(happyMåne1.target);
+   
+
+    // Lamper over vagten
+    const happyLamper1 = new THREE.PointLight(0x13fc03, 30, 1);
+    happyLamper1.position.set(0.9, 3.5, 2.1);
+    scene.add(happyLamper1);
+    const happyLamper1nr2 = happyLamper1.clone();
+    happyLamper1nr2.position.set(-0.9, 3.5, 2.1);
+    scene.add(happyLamper1nr2);
+
+ // star
+ let star;
+
+const loaderstar = new GLTFLoader();
+loaderstar.load('modeler/HappyLys/star.glb', (gltf) => {
+  star = gltf.scene; // brug global variabel
+  star.scale.set(0.5, 0.5, 0.5);
+ 
+  star.rotation.y = Math.PI;
+  scene.add(star);
+});
 
 // Lyd setup
 const soundFarve = new Sound(camera);  // den primære lyd
@@ -57,82 +94,40 @@ soundFarve.loadSound('/lyd/farve.mp3');
 const soundGraa = new Sound(camera);   // den alternative lyd
 soundGraa.loadSound('/lyd/graa.mp3');
 
-// Mellemrums events:
-let spaceCount = 0;
-let isSpacePressed = false;
-let hastighed = 0;
-let activeHappyLights = [];
-const maxHastighed = 0.07; // Maksimal hastighed
-const acceleration = 0.01; // Acceleration pr. frame
-const maxSpace = 10;
-const counterDiv = document.getElementById("spaceCounter");
+// Globale variabler, som keyboard.js og animate kan bruge
+const globals = {
+  isSpacePressed: false,
+  hastighed: 0,
+  activeHappyLights: [],
+  spaceCount: 0,
+  counterDiv: document.getElementById("spaceCounter"),
+  soundFarve,
+  soundGraa
+};
 
-// Hvis keydown klikkes:
-window.addEventListener('keydown', (event) => {
-  if(event.code === 'Space' && !event.repeat) {
-
-    // Sæt karakter til at bevæge sig
-    isSpacePressed = true;
-
-    // Opdater tæller (+1) for hvert klik
-    if(spaceCount < maxSpace) {
-      spaceCount++;
-      counterDiv.textContent = `Space presses: ${spaceCount}`;
-    }
-
-    // Happy lys når space = 1
-    if(spaceCount === 1 && activeHappyLights.length === 0) {
-      activeHappyLights = happyLys(scene);
-    } 
-    // Fjern happy lys hvis spaceCount ikke længere = 1
-    else if(spaceCount !== 1 && activeHappyLights.length > 0) {
-      activeHappyLights.forEach(light => scene.remove(light));
-      activeHappyLights = [];
-    }
-
-    // Trigger special event hvis maxSpace er nået
-    if(spaceCount === maxSpace) {
-      triggerSpecialEvent();
-    }
-
-    // Musik
-    soundGraa.pauseSound();
-    soundFarve.playSound();
-  }
-});
-
-// Hvis keyup klikkes:
-window.addEventListener('keyup', (event) => {
-  if(event.code === 'Space') {
-    // Stop karakteren
-    isSpacePressed = false;
-    hastighed = 0;
-
-    // Musik
-    soundFarve.pauseSound();
-    soundGraa.playSound();
-  }
-});
+// Setup keyboard events
+setupKeyboard(scene, globals);
 
 // Animation
+const maxHastighed = 0.07;
+const acceleration = 0.01;
+
 function animate() {
   requestAnimationFrame(animate);
 
-  if (isSpacePressed) {
-    // Acceleration: karakteren går hurtigere, når space holdes
-    hastighed += acceleration;
-    hastighed = Math.min(hastighed, maxHastighed);
-
-    // Bevæg karakter frem
-    spiller.position.z -= hastighed;
-
-    // Let op-ned bevægelse
+  if (globals.isSpacePressed) {
+    globals.hastighed += acceleration;
+    globals.hastighed = Math.min(globals.hastighed, maxHastighed);
+    spiller.position.z -= globals.hastighed;
     spiller.position.y = 1 + Math.sin(Date.now() * 0.01) * 0.05;
   }
 
   // Kamera følger spilleren
   camera.position.copy(spiller.position).add(new THREE.Vector3(0, 1.5, 0));
 
+if (star) {
+  star.position.copy(spiller.position).add(new THREE.Vector3(2, -0.3, 0));
+}
   // SkySphere følger spilleren, men roterer ikke
   if (window.skySphere) {
     window.skySphere.position.copy(spiller.position);

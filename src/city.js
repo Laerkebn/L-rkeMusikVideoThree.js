@@ -21,7 +21,7 @@ export function loadCity(scene) {
 
   // Byen
   const loaderCity = new GLTFLoader();
-  loaderCity.load('modeler/city.glb', (gltf) => {
+  loaderCity.load('modeler/by/city.glb', (gltf) => {
     const city = gltf.scene;
     city.scale.set(1, 1, 1);
     city.position.set(5, 1, -40);
@@ -37,7 +37,7 @@ export function loadCity(scene) {
 
   // Ekstra bygning
   const loadbuilding = new GLTFLoader();
-  loadbuilding.load('modeler/building.glb', (gltf) => {
+  loadbuilding.load('modeler/by/building.glb', (gltf) => {
     const building = gltf.scene;
     building.scale.set(2, 2, 2);
     building.position.set(20, -35, 5);
@@ -48,7 +48,7 @@ export function loadCity(scene) {
 
   // Club
   const loaderClub = new GLTFLoader();
-  loaderClub.load('modeler/club.glb', (gltf) => {
+  loaderClub.load('modeler/by/club.glb', (gltf) => {
     const club = gltf.scene;
     club.scale.set(0.01, 0.01, 0.01);
     club.position.set(-0, 1, 2);
@@ -59,7 +59,7 @@ export function loadCity(scene) {
 
   // Fence
   const loaderFence = new GLTFLoader();
-  loaderFence.load('modeler/fence.glb', (gltf) => {
+  loaderFence.load('modeler/by/fence.glb', (gltf) => {
     const fence = gltf.scene;
     fence.scale.set(0.03, 0.03, 0.03);
     fence.position.set(9, 1, 2.4);
@@ -70,7 +70,7 @@ export function loadCity(scene) {
 
   // Lille hegn
   const loaderHegn = new GLTFLoader();
-  loaderHegn.load('modeler/lillehegn.glb', (gltf) => {
+  loaderHegn.load('modeler/by/lillehegn.glb', (gltf) => {
     const lillehegn = gltf.scene;
     lillehegn.scale.set(1.8, 1.4, 1.5);
     lillehegn.position.set(1.2, 1, 0.9);
@@ -86,7 +86,7 @@ scene.add(lillehegn);
 
   // Vagt
   const loaderVagt = new GLTFLoader();
-  loaderVagt.load('modeler/vagt.glb', (gltf) => {
+  loaderVagt.load('modeler/mennesker/vagt.glb', (gltf) => {
     const vagt = gltf.scene;
     vagt.scale.set(1.8, 1.4, 1.5);
     vagt.position.set(0, 1, 2);

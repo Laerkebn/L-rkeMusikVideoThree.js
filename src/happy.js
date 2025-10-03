@@ -36,3 +36,8 @@ export function happyLys(scene) {
 
     return lights; // returner lysene, så vi kan fjerne dem senere
 }
+
+export function happyLys2(scene) {
+
+    
+}

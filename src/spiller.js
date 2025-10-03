@@ -12,7 +12,7 @@ export function loadPerson(scene, camera) {
 
   // Hænder
   const loader = new GLTFLoader();
-  loader.load('modeler/hands.glb', (gltf) => {
+  loader.load('modeler/mennesker/hands.glb', (gltf) => {
     const hands = gltf.scene;
 
     hands.scale.set(0.01, 0.01, 0.01);
