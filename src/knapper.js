@@ -44,7 +44,7 @@ export function setupKeyboard(scene, globals) {
       }
 
       // Automatically call the correct stage function
-      const stageIndex = globals.spaceCount - 1; // Convert to 0-based index
+      const stageIndex = globals.spaceCount - 1; 
       
       if (stageIndex >= 0 && stageIndex < happyStages.length) {
         const stageFunction = happyStages[stageIndex];
@@ -56,8 +56,6 @@ export function setupKeyboard(scene, globals) {
       // Trigger special event hvis maxSpace er nået
       if (globals.spaceCount === maxSpace) {
         console.log('Max space reached! Stage 10 complete!');
-        // You can add a special function here if needed
-        // triggerSpecialEvent();
       }
 
       // Musik
@@ -79,7 +77,7 @@ export function setupKeyboard(scene, globals) {
         globals.activeHappyLights = [];
       }
 
-      // Fjern stjernerne også
+      // Fjern stjernerne og fyrværkeri
       if (globals.activeStars && globals.activeStars.length > 0) {
         globals.activeStars.forEach(star => {
           if (star.parent) {

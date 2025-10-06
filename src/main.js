@@ -8,7 +8,7 @@ import { loadPerson } from './spiller.js';
 import GUI from 'three/examples/jsm/libs/lil-gui.module.min.js';
 import { loadLys } from './lys.js';
 import { setupKeyboard } from './knapper.js';
-import { happyLys1, happyLys2, happyLys3 } from './happy.js';
+import { happyLys1, happyLys2, happyLys3, happyLys4 } from './happy.js';
 
 
 // Renderer
@@ -24,11 +24,11 @@ const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerH
 camera.position.set(0, 1.5, 5);
 
 //popup
-//const popup = document.getElementById("popup");
+const popup = document.getElementById("popup");
 
-//popup.querySelector("#closePopup").addEventListener("click", () => {
-//popup.style.display = "none";
-//});
+popup.querySelector("#closePopup").addEventListener("click", () => {
+popup.style.display = "none";
+});
 
 // lys 
 loadLys(scene);
@@ -54,21 +54,22 @@ window.addEventListener('resize', () => {
 
 // Lyd setup
 const soundFarve = new Sound(camera);  // den primære lyd
-soundFarve.loadSound('/lyd/farve.mp3');
+soundFarve.loadSound('/public/lyd/farve.mp3'); 
 
 const soundGraa = new Sound(camera);   // den alternative lyd
-soundGraa.loadSound('/lyd/graa.mp3');
+soundGraa.loadSound('/public/lyd/graa.mp3');
 
 // Globale variabler, som keyboard.js og animate kan bruge
 const globals = {
   isSpacePressed: false,
   hastighed: 0,
   activeHappyLights: [],
-   activeStars: [],
+  activeStars: [],
   spaceCount: 0,
   counterDiv: document.getElementById("spaceCounter"),
   soundFarve,
-  soundGraa
+  soundGraa,
+  camera 
 };
 
 // Setup keyboard events (styrer lys/stjerner på space-klik)
@@ -77,7 +78,6 @@ setupKeyboard(scene, globals);
 // Animation
 const maxHastighed = 0.07;
 const acceleration = 0.01;
-
 function animate() {
   requestAnimationFrame(animate);
 
@@ -92,7 +92,7 @@ function animate() {
   // Kamera følger spilleren
   camera.position.copy(spiller.position).add(new THREE.Vector3(0, 1.5, 0));
 
-// Få stjernerne til at følge spilleren
+  // Få stjernerne til at følge spilleren
   if (globals.activeStars.length > 0) {
     const afstandZ = 3;
     const sideAfstand = 2;
@@ -100,7 +100,7 @@ function animate() {
 
     globals.activeStars.forEach((s, idx) => {
       const række = Math.floor(idx / 2);
-      const side = (idx % 2 === 0) ? -1 : 1;  // -1 = venstre, 1 = højre
+      const side = (idx % 2 === 0) ? -1 : 1;
 
       s.position.set(
         spiller.position.x + side * sideAfstand,
@@ -110,15 +110,27 @@ function animate() {
     });
   }
 
-// Få fyrværkeriet til at blinke
-if (window.firework && window.firework.white) {
-  const fw = window.firework.white;
-  const interval = 50;
-  const time = Date.now() % (interval * 2);
-  
-  // Synlig i første halvdel, usynlig i anden halvdel
-  fw.visible = time < interval; 
+// Få fyrværkeriet til at følge spilleren (sidst i stars array)
+if (globals.activeStars.length > 0) {
+  const firework = globals.activeStars[globals.activeStars.length - 1];
+
+  // Tjek om det er fyrværkeri
+  if (firework.scale.x === 2) {
+    // Få det til at følge spilleren
+    firework.position.set(
+      spiller.position.x,
+      spiller.position.y - 0.5,
+      spiller.position.z - 2
+    );
+
+    // Blink-effekt
+    const blinkInterval = 50; // ms
+    const time = Date.now() % (blinkInterval * 2);
+    firework.visible = time < blinkInterval;
+  }
 }
+
+//Får floor til at følge spillern
 
   // SkySphere følger spilleren, men roterer ikke
   if (window.skySphere) {
@@ -126,7 +138,6 @@ if (window.firework && window.firework.white) {
   }
 
   renderer.render(scene, camera);
-}
-
+} 
 // Start animation
 animate();
