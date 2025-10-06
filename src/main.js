@@ -7,8 +7,10 @@ import { loadCity } from './city.js';
 import { loadPerson } from './spiller.js';
 import GUI from 'three/examples/jsm/libs/lil-gui.module.min.js';
 import { loadLys } from './lys.js';
-import { happyLys } from './happy.js';
 import { setupKeyboard } from './knapper.js';
+import { happyLys1, happyLys2, happyLys3 } from './happy.js';
+
+
 // Renderer
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -30,6 +32,7 @@ camera.position.set(0, 1.5, 5);
 
 // lys 
 loadLys(scene);
+
 // Tilføj byen + baggrund + objekter
 loadCity(scene);
 
@@ -49,44 +52,6 @@ window.addEventListener('resize', () => {
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
-// happy lys:
- // Himmel
-    const color = 0x13fc03;
-    const intensity = 1;
-    const happysol1 = new THREE.DirectionalLight(color, intensity);
-    happysol1.position.set(5, 30, 10);
-    happysol1.target.position.set(10, 5, -30);
-    scene.add(happysol1);
-    scene.add(happysol1.target);
-
-    // Måne
-    const happyMåne1 = new THREE.DirectionalLight(0xeb1043, 10);
-    happyMåne1.position.set(20, 10, -40);
-    happyMåne1.target.position.set(10, 5, -30);
-    scene.add(happyMåne1);
-    scene.add(happyMåne1.target);
-   
-
-    // Lamper over vagten
-    const happyLamper1 = new THREE.PointLight(0x13fc03, 30, 1);
-    happyLamper1.position.set(0.9, 3.5, 2.1);
-    scene.add(happyLamper1);
-    const happyLamper1nr2 = happyLamper1.clone();
-    happyLamper1nr2.position.set(-0.9, 3.5, 2.1);
-    scene.add(happyLamper1nr2);
-
- // star
- let star;
-
-const loaderstar = new GLTFLoader();
-loaderstar.load('modeler/HappyLys/star.glb', (gltf) => {
-  star = gltf.scene; // brug global variabel
-  star.scale.set(0.5, 0.5, 0.5);
- 
-  star.rotation.y = Math.PI;
-  scene.add(star);
-});
-
 // Lyd setup
 const soundFarve = new Sound(camera);  // den primære lyd
 soundFarve.loadSound('/lyd/farve.mp3');
@@ -99,13 +64,14 @@ const globals = {
   isSpacePressed: false,
   hastighed: 0,
   activeHappyLights: [],
+   activeStars: [],
   spaceCount: 0,
   counterDiv: document.getElementById("spaceCounter"),
   soundFarve,
   soundGraa
 };
 
-// Setup keyboard events
+// Setup keyboard events (styrer lys/stjerner på space-klik)
 setupKeyboard(scene, globals);
 
 // Animation
@@ -115,6 +81,7 @@ const acceleration = 0.01;
 function animate() {
   requestAnimationFrame(animate);
 
+  // Bevæger spilleren fremad hvis space holdes
   if (globals.isSpacePressed) {
     globals.hastighed += acceleration;
     globals.hastighed = Math.min(globals.hastighed, maxHastighed);
@@ -125,9 +92,34 @@ function animate() {
   // Kamera følger spilleren
   camera.position.copy(spiller.position).add(new THREE.Vector3(0, 1.5, 0));
 
-if (star) {
-  star.position.copy(spiller.position).add(new THREE.Vector3(2, -0.3, 0));
+// Få stjernerne til at følge spilleren
+  if (globals.activeStars.length > 0) {
+    const afstandZ = 3;
+    const sideAfstand = 2;
+    const højde = -0.39;
+
+    globals.activeStars.forEach((s, idx) => {
+      const række = Math.floor(idx / 2);
+      const side = (idx % 2 === 0) ? -1 : 1;  // -1 = venstre, 1 = højre
+
+      s.position.set(
+        spiller.position.x + side * sideAfstand,
+        spiller.position.y + højde + Math.sin(Date.now() * 0.005 + idx) * 0.05,
+        spiller.position.z - række * afstandZ + 10
+      );
+    });
+  }
+
+// Få fyrværkeriet til at blinke
+if (window.firework && window.firework.white) {
+  const fw = window.firework.white;
+  const interval = 50;
+  const time = Date.now() % (interval * 2);
+  
+  // Synlig i første halvdel, usynlig i anden halvdel
+  fw.visible = time < interval; 
 }
+
   // SkySphere følger spilleren, men roterer ikke
   if (window.skySphere) {
     window.skySphere.position.copy(spiller.position);

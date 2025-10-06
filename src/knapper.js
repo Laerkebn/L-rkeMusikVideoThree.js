@@ -1,11 +1,35 @@
 import './style.css';
 import * as THREE from 'three';
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls.js';
-import { happyLys } from './happy.js';
-
+import { 
+  happyLys1, 
+  happyLys2, 
+  happyLys3, 
+  happyLys4, 
+  happyLys5, 
+  happyLys6, 
+  happyLys7, 
+  happyLys8, 
+  happyLys9, 
+  happyLys10 
+} from './happy.js';
 
 export function setupKeyboard(scene, globals) {
   const maxSpace = 10;
+
+  // Array of all happy-lys stages (index 0 = stage 1)
+  const happyStages = [
+    happyLys1, 
+    happyLys2, 
+    happyLys3, 
+    happyLys4, 
+    happyLys5, 
+    happyLys6, 
+    happyLys7, 
+    happyLys8, 
+    happyLys9, 
+    happyLys10
+  ]; 
 
   // Keydown
   window.addEventListener('keydown', (event) => {
@@ -19,14 +43,21 @@ export function setupKeyboard(scene, globals) {
         globals.counterDiv.textContent = `Space presses: ${globals.spaceCount}`;
       }
 
-      // Happy lys når space = 1 og space holdes
-      if (globals.spaceCount === 1 && globals.activeHappyLights.length === 0) {
-        globals.activeHappyLights = happyLys(scene);
+      // Automatically call the correct stage function
+      const stageIndex = globals.spaceCount - 1; // Convert to 0-based index
+      
+      if (stageIndex >= 0 && stageIndex < happyStages.length) {
+        const stageFunction = happyStages[stageIndex];
+        const stageResult = stageFunction(scene, globals.camera);
+        globals.activeHappyLights = stageResult.lights;
+        globals.activeStars = stageResult.stars || [];
       }
 
       // Trigger special event hvis maxSpace er nået
       if (globals.spaceCount === maxSpace) {
-        triggerSpecialEvent();
+        console.log('Max space reached! Stage 10 complete!');
+        // You can add a special function here if needed
+        // triggerSpecialEvent();
       }
 
       // Musik
@@ -46,6 +77,16 @@ export function setupKeyboard(scene, globals) {
       if (globals.activeHappyLights.length > 0) {
         globals.activeHappyLights.forEach(light => scene.remove(light));
         globals.activeHappyLights = [];
+      }
+
+      // Fjern stjernerne også
+      if (globals.activeStars && globals.activeStars.length > 0) {
+        globals.activeStars.forEach(star => {
+          if (star.parent) {
+            scene.remove(star);
+          }
+        });
+        globals.activeStars = [];
       }
 
       // Musik
