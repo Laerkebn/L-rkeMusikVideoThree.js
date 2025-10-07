@@ -17,45 +17,49 @@ import {
 export function setupKeyboard(scene, globals) {
   const maxSpace = 10;
 
-  // Array of all happy-lys stages (index 0 = stage 1)
-  const happyStages = [
-    happyLys1, 
-    happyLys2, 
-    happyLys3, 
-    happyLys4, 
-    happyLys5, 
-    happyLys6, 
-    happyLys7, 
-    happyLys8, 
-    happyLys9, 
-    happyLys10
-  ]; 
+  // Gem alle stages permanent (genbruges hver gang)
+  if (!globals.permanentStages) {
+    globals.permanentStages = {
+      lights: [],
+      stars: []
+    };
+  }
 
-  // Keydown
   window.addEventListener('keydown', (event) => {
     if (event.code === 'Space' && !event.repeat) {
-      // Sæt karakter til at bevæge sig
       globals.isSpacePressed = true;
 
-      // Opdater tæller (+1)
       if (globals.spaceCount < maxSpace) {
         globals.spaceCount++;
         globals.counterDiv.textContent = `Space presses: ${globals.spaceCount}`;
       }
 
-      // Automatically call the correct stage function
-      const stageIndex = globals.spaceCount - 1; 
-      
-      if (stageIndex >= 0 && stageIndex < happyStages.length) {
-        const stageFunction = happyStages[stageIndex];
-        const stageResult = stageFunction(scene, globals.camera);
-        globals.activeHappyLights = stageResult.lights;
-        globals.activeStars = stageResult.stars || [];
-      }
+      const stageFunctions = [
+        happyLys1,
+        happyLys2,
+        happyLys3,
+        happyLys4,
+        happyLys5,
+        happyLys6,
+        happyLys7,
+        happyLys8,
+        happyLys9,
+        happyLys10
+      ];
 
-      // Trigger special event hvis maxSpace er nået
-      if (globals.spaceCount === maxSpace) {
-        console.log('Max space reached! Stage 10 complete!');
+      // Tilføj ALLE stages op til det nuværende level
+      for (let i = 0; i < globals.spaceCount; i++) {
+        if (stageFunctions[i]) {
+          const { lights, stars } = stageFunctions[i](scene, globals.camera, globals);
+          
+          // Gem permanent (så de kan genbruges)
+          globals.permanentStages.lights.push(...lights);
+          globals.permanentStages.stars.push(...stars);
+          
+          // Tilføj også til aktive (så de kan fjernes ved keyup)
+          globals.activeHappyLights.push(...lights);
+          globals.activeStars.push(...stars);
+        }
       }
 
       // Musik
@@ -64,28 +68,32 @@ export function setupKeyboard(scene, globals) {
     }
   });
 
-  // Keyup
   window.addEventListener('keyup', (event) => {
     if (event.code === 'Space') {
-      // Stop karakteren
       globals.isSpacePressed = false;
       globals.hastighed = 0;
 
-      // Fjern lysene igen når man slipper space
-      if (globals.activeHappyLights.length > 0) {
-        globals.activeHappyLights.forEach(light => scene.remove(light));
-        globals.activeHappyLights = [];
-      }
+      // Fjern alle aktive lys fra scenen
+      globals.activeHappyLights.forEach(light => scene.remove(light));
+      globals.activeHappyLights = [];
 
-      // Fjern stjernerne og fyrværkeri
-      if (globals.activeStars && globals.activeStars.length > 0) {
-        globals.activeStars.forEach(star => {
-          if (star.parent) {
-            scene.remove(star);
-          }
-        });
-        globals.activeStars = [];
-      }
+      // Fjern alle aktive stjerner fra scenen
+      globals.activeStars.forEach(star => {
+        if (star.parent) scene.remove(star);
+      });
+      globals.activeStars = [];
+
+      // VIGTIGT: Reset stage flags så de kan tilføjes igen
+      globals.stage1Added = false;
+      globals.stage2Added = false;
+      globals.stage3Added = false;
+      globals.stage4Added = false;
+      globals.stage5Added = false;
+      globals.stage6Added = false;
+      globals.stage7Added = false;
+      globals.stage8Added = false;
+      globals.stage9Added = false;
+      globals.stage10Added = false;
 
       // Musik
       globals.soundFarve.pauseSound();

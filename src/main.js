@@ -8,7 +8,7 @@ import { loadPerson } from './spiller.js';
 import GUI from 'three/examples/jsm/libs/lil-gui.module.min.js';
 import { loadLys } from './lys.js';
 import { setupKeyboard } from './knapper.js';
-import { happyLys1, happyLys2, happyLys3, happyLys4 } from './happy.js';
+import { happyLys1, happyLys2, happyLys3, happyLys4, happyLys5, happyLys6, happyLys7, happyLys8, happyLys9, happyLys10} from './happy.js';
 
 
 // Renderer
@@ -69,7 +69,17 @@ const globals = {
   counterDiv: document.getElementById("spaceCounter"),
   soundFarve,
   soundGraa,
-  camera 
+  camera, 
+  stage1Added: false,
+  stage2Added: false,
+  stage3Added: false,
+  stage4Added: false,
+  stage5Added: false,
+  stage6Added: false,
+  stage7Added: false,
+  stage8Added: false,
+  stage9Added: false,
+  stage10Added: false
 };
 
 // Setup keyboard events (styrer lys/stjerner på space-klik)
@@ -78,11 +88,12 @@ setupKeyboard(scene, globals);
 // Animation
 const maxHastighed = 0.07;
 const acceleration = 0.01;
+
 function animate() {
   requestAnimationFrame(animate);
 
   // Bevæger spilleren fremad hvis space holdes
-  if (globals.isSpacePressed) {
+if (globals.isSpacePressed) {
     globals.hastighed += acceleration;
     globals.hastighed = Math.min(globals.hastighed, maxHastighed);
     spiller.position.z -= globals.hastighed;
@@ -91,53 +102,68 @@ function animate() {
 
   // Kamera følger spilleren
   camera.position.copy(spiller.position).add(new THREE.Vector3(0, 1.5, 0));
+// Opdater alle aktive objekter
+globals.activeStars.forEach((s) => {
+  // Fyrværkeri (følger kameraet og blinker)
+  if (s.userData.type === "firework") {
+    const offset = new THREE.Vector3(0, 0, -3);
+    offset.applyQuaternion(camera.quaternion);
+    s.position.copy(camera.position).add(offset);
 
-  // Få stjernerne til at følge spilleren
-  if (globals.activeStars.length > 0) {
-    const afstandZ = 3;
-    const sideAfstand = 2;
-    const højde = -0.39;
-
-    globals.activeStars.forEach((s, idx) => {
-      const række = Math.floor(idx / 2);
-      const side = (idx % 2 === 0) ? -1 : 1;
-
-      s.position.set(
-        spiller.position.x + side * sideAfstand,
-        spiller.position.y + højde + Math.sin(Date.now() * 0.005 + idx) * 0.05,
-        spiller.position.z - række * afstandZ + 10
-      );
-    });
+    const blinkSpeed = 50;
+    const time = Date.now() % (blinkSpeed * 2);
+    s.visible = time < blinkSpeed;
+    return; // Spring stjerne-logik over
   }
 
-// Få fyrværkeriet til at følge spilleren (sidst i stars array)
-if (globals.activeStars.length > 0) {
-  const firework = globals.activeStars[globals.activeStars.length - 1];
+  // Glitter (følger kameraet)
+  if (s.userData.type === "glitter") {
+    const amplitude = 20;
+    const speed = 0.002;
 
-  // Tjek om det er fyrværkeri
-  if (firework.scale.x === 2) {
-    // Få det til at følge spilleren
-    firework.position.set(
-      spiller.position.x,
-      spiller.position.y - 0.5,
-      spiller.position.z - 2
+    s.position.set(
+      camera.position.x,
+      0,
+      camera.position.z + Math.sin(Date.now() * speed) * amplitude
     );
-
-    // Blink-effekt
-    const blinkInterval = 50; // ms
-    const time = Date.now() % (blinkInterval * 2);
-    firework.visible = time < blinkInterval;
+    return; // Spring stjerne-logik over
   }
-}
 
-//Får floor til at følge spillern
+  // Rod
+  if (s.userData.type === "rod") {
+    const amplitude = 20;
+    const speed = 0.002;
+    s.position.set(
+      camera.position.x,
+      0,
+      camera.position.z + Math.sin(Date.now() * speed) * amplitude
+    );
+    return; // Spring stjerne-logik over
+  }
 
-  // SkySphere følger spilleren, men roterer ikke
+  // 🌟 Stjerner (følger spilleren) - FIXED: fjernet isFirework check
+  const idx = globals.activeStars.indexOf(s);
+  const afstandZ = 3;
+  const sideAfstand = 2;
+  const højde = -0.39;
+  const række = Math.floor(idx / 2);
+  const side = (idx % 2 === 0) ? -1 : 1;
+
+  s.position.set(
+    spiller.position.x + side * sideAfstand,
+    spiller.position.y + højde + Math.sin(Date.now() * 0.005 + idx) * 0.05,
+    spiller.position.z - række * afstandZ + 10
+  );
+});
+
+  // SkySphere følger spilleren (men roterer ikke)
   if (window.skySphere) {
     window.skySphere.position.copy(spiller.position);
   }
 
+  // Tegn scenen
   renderer.render(scene, camera);
-} 
+}
+
 // Start animation
 animate();
