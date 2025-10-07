@@ -35,7 +35,7 @@ loader.load('modeler/HappyLys/greenfloor.glb', (gltf) => {
   preloadedFloor.scale.set(1, 1, 1
   );
 });
-
+ //test
 // Stage 1 - happy lys
 export function happyLys1(scene, camera) {
   const lights = [];
