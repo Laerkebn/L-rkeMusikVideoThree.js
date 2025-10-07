@@ -31,7 +31,7 @@ export function setupKeyboard(scene, globals) {
 
       if (globals.spaceCount < maxSpace) {
         globals.spaceCount++;
-        globals.counterDiv.textContent = `Space presses: ${globals.spaceCount}`;
+        globals.counterDiv.textContent = `Pills Counter: ${globals.spaceCount}`;
       }
 
       const stageFunctions = [

@@ -5,7 +5,7 @@ export function loadPerson(scene, camera) {
   // Spiller
   const spiller = new THREE.Mesh(
     new THREE.BoxGeometry(0.5, 2, 0.5),
-    new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0 })
+    new THREE.MeshBasicMaterial({ color: 0xff00, transparent: true, opacity: 0 })
   );
   spiller.position.y = 1;
   scene.add(spiller);

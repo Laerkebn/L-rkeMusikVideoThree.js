@@ -185,6 +185,7 @@ export function happyLys5(scene, camera, globals) {
   if (globals.stage5Added) {
     console.log("⚠️ Stage 5 allerede tilføjet");
     return { lights: [], stars: [] };
+
   }
   const lights = [];
   const stars = [];
@@ -192,11 +193,14 @@ export function happyLys5(scene, camera, globals) {
   // Rod (NYT)
   if (preloadedRod) {
     const rod = preloadedRod.clone(true);
-    rod.scale.set(2, 2, 2);
+    rod.scale.set(5, 5, 5);
+    // Permanent rotation
+    rod.rotation.set(Math.PI /0.1, Math.PI / 1, 5);
+
     scene.add(rod);
     stars.push(rod);
   }
-  console.log(`✅ Stage 5: Tilføjet ${stars.length} stjerner`);
+
   globals.stage5Added = true; 
   return { lights, stars };
 }
@@ -218,7 +222,6 @@ export function happyLys6(scene, camera, globals) {
   scene.add(nytLys, nytLys.target);
   lights.push(nytLys, nytLys.target);
   
-console.log(`✅ Stage 6: Tilføjet ${stars.length} stjerner`);
   globals.stage6Added = true; 
   return { lights, stars };
 }
