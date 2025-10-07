@@ -22,7 +22,7 @@ loader.load('modeler/HappyLys/star.glb', (gltf) => {
 });
 
 // Preload fyrværkeri
-loader.load('modeler/HappyLys/fireworkred.glb', (gltf) => {
+loader.load('modeler/HappyLys/glitter_flow.glb', (gltf) => {
   preloadedFirework = gltf.scene;
   preloadedFirework.scale.set(2, 1, 2);
   const fwLight = new THREE.PointLight(0xe100ff, 10, 50);
