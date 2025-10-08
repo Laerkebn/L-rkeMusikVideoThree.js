@@ -10,7 +10,8 @@ export let preloadedStar = null;
 export let preloadedFirework = null;
 export let preloadedGlitter = null;
 export let preloadedRod = null;
-export let preloadedSmoke =null
+export let preloadedSmoke = null
+export let preloadeSmoke = null
 
 manager.onLoad = () => {
   console.log("✅ Alle modeller er preloaded!");
@@ -39,6 +40,7 @@ loader.load('modeler/HappyLys/glitter_flow.glb', (gltf) => {
   preloadedGlitter.userData.type = "glitter";
 });
 
+
 // Preload rod
 loader.load('modeler/HappyLys/rod.glb', (gltf) => {
   preloadedRod = gltf.scene;
@@ -51,11 +53,12 @@ loader.load('modeler/HappyLys/rod.glb', (gltf) => {
 //preloade smoke
 loader.load('modeler/HappyLys/smoke_effect_blue.glb', (gltf) => {
   preloadedSmoke = gltf.scene;
-  preloadedSmoke.scale.set(20, 20, 20);
+  preloadedSmoke.scale.set(1, 1, 1);
   preloadedSmoke.userData.type = "smoke";
   const smokeLight = new THREE.PointLight(0xff0000, 50, 30);
   preloadedSmoke.add(smokeLight);
 });
+
 
 // Stage 1 - kun lys
 export function happyLys1(scene, camera, globals) {
@@ -232,19 +235,20 @@ export function happyLys6(scene, camera, globals) {
   scene.add(nytLys, nytLys.target);
   lights.push(nytLys, nytLys.target);
   
-
-  // smoke (NYT)
+// smoke (NYT)
   if (preloadedSmoke) {
     const smoke = preloadedSmoke.clone(true);
-    smoke.scale.set(2, 2, 2);
+    smoke.position.set(0, 2, -10); // Sæt initial position
+    smoke.scale.set(0.03, 0.03, 0.03); // Meget mindre størrelse først
+    console.log("✅ Smoke tilføjet til scene"); // DEBUG
+
     scene.add(smoke);
     stars.push(smoke);
   }
 
   globals.stage6Added = true; 
-  return { lights, stars };
+  return { lights, stars }; 
 }
-
 
 // --- Stage 7 ---
 export function happyLys7(scene, camera, globals) {

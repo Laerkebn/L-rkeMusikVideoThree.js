@@ -19,8 +19,15 @@ export function startAnimation(scene, camera, spiller, globals, renderer) {
     // Kamera følger spilleren
     camera.position.copy(spiller.position).add(new THREE.Vector3(0, 1.5, 0));
 
+        // SkySphere følger spilleren (men roterer ikke)
+    if (window.skySphere) {
+      window.skySphere.position.copy(spiller.position);
+    }
+
     // Opdater alle aktive objekter
     globals.activeStars.forEach((s) => {
+
+      
       // Fyrværkeri (følger kameraet og blinker)
       if (s.userData.type === "firework") {
         const offset = new THREE.Vector3(0, 0, -3);
@@ -45,6 +52,7 @@ export function startAnimation(scene, camera, spiller, globals, renderer) {
         return;
       }
 
+
 // Rod
 if (s.userData.type === "rod") {
   const offsetForward = 20;  // hvor langt foran spilleren den skal stå
@@ -66,11 +74,38 @@ if (s.userData.type === "rod") {
     // Hvis roden er for langt bag → flyv frem foran igen
     s.position.lerp(targetPos, flyUpSpeed);
   }
-
-  return; // så den ikke overskrives af andet
+  return;
 }
-      // 🌟 Stjerner (følger spilleren)
-      const idx = globals.activeStars.indexOf(s);
+
+// Smoke (følger spilleren, falder kun i Y)
+if (s.userData.type === "smoke") {
+  // Sæt en faldhastighed hvis den ikke allerede findes
+  if (s.userData.velocity === undefined) {
+    s.userData.velocity = 0.09; // juster hastigheden her
+  }
+
+  // Opdater Y
+  s.position.y -= s.userData.velocity;
+
+  // Hold X og Z relativt til spilleren
+  const offsetX = -0.5; // venstre/højre
+  const offsetZ = -20;  // foran/bag spilleren
+  s.position.x = spiller.position.x + offsetX;
+  s.position.z = spiller.position.z + offsetZ;
+
+  // Når den når for langt ned, reset til toppen
+  const minY = -6;   // laveste punkt
+  const maxY = 20;   // hvor den respawner
+  if (s.position.y < minY) {
+    s.position.y = maxY;
+  }
+
+  return;
+}
+
+
+// Stjerner (følger spilleren)
+const idx = globals.activeStars.indexOf(s);
       const afstandZ = 3;
       const sideAfstand = 2;
       const højde = -0.39;
@@ -84,10 +119,7 @@ if (s.userData.type === "rod") {
       );
     });
 
-    // SkySphere følger spilleren (men roterer ikke)
-    if (window.skySphere) {
-      window.skySphere.position.copy(spiller.position);
-    }
+
 
     // Tegn scenen
     renderer.render(scene, camera);
