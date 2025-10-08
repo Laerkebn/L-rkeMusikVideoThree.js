@@ -27,14 +27,29 @@
 
 
   <!-- Loader dit spil -->
-   <!-- mellemrumsknaps tæller -->
-<div id="spaceCounter" 
-     style="position: fixed; top: 10px; right: 10px; 
-            background: rgba(0,0,0,0.6); color: #858c9e; 
-            padding: 8px 12px; border-radius: 8px; 
-            font-family: sans-serif; font-weight: bold; z-index: 100;">
- Pill Counter: 0
+<!-- mellemrumsknaps tæller + pillebillede -->
+<!-- Loader dit spil -->
+<!-- mellemrumsknaps tæller + pillebillede -->
+<div style="position: fixed; top: 20px; right: 20px; display: flex; align-items: center; gap: 1vw; z-index: 100;">
+
+  <!-- Pill Counter-boks -->
+  <div id="spaceCounter"
+       style="background: rgba(0,0,0,0.6); color: #858c9e; 
+              padding: 8px 12px; border-radius: 8px; 
+              font-family: sans-serif; font-weight: bold; font-size: 1.8vw; 
+              text-align: center;
+              min-width: 100px; max-width: 220px;
+              box-shadow: 0 0 10px rgba(0,0,0,0.8);">
+    Pill Counter: 0
+  </div>
+
+  <!-- Billede der følger med -->
+  <img id="pillImage" 
+       src="/Billeder/PillerALLE.svg" 
+       alt="Pill Icon"
+       style="width: min(25vw, 300px); height: auto;">
 </div>
+
   <script type="module" src="/src/main.js"></script>
 </body>
 </html>

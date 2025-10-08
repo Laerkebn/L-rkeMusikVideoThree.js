@@ -32,6 +32,25 @@ export function setupKeyboard(scene, globals) {
       if (globals.spaceCount < maxSpace) {
         globals.spaceCount++;
         globals.counterDiv.textContent = `Pills Counter: ${globals.spaceCount}`;
+
+        // Skift pillebillede
+const pillImage = document.getElementById("pillImage");
+const pillImages = [
+  "/Billeder/Piller7.svg",
+  "/Billeder/Piller6.svg",
+  "/Billeder/Piller5.svg",
+  "/Billeder/Piller4.svg",
+  "/Billeder/Piller3.svg",
+  "/Billeder/Piller2.svg",
+  "/Billeder/Piller1.svg",
+  "/Billeder/Piller0.svg",
+  "/Billeder/Piller0.svg"
+];
+
+// Skift kun hvis vi ikke går ud over arrayets længde
+if (pillImage && globals.spaceCount <= pillImages.length) {
+  pillImage.src = pillImages[globals.spaceCount - 1];
+}
       }
 
       const stageFunctions = [
