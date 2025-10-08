@@ -10,6 +10,7 @@ export let preloadedStar = null;
 export let preloadedFirework = null;
 export let preloadedGlitter = null;
 export let preloadedRod = null;
+export let preloadedSmoke =null
 
 manager.onLoad = () => {
   console.log("✅ Alle modeller er preloaded!");
@@ -45,6 +46,15 @@ loader.load('modeler/HappyLys/rod.glb', (gltf) => {
   preloadedRod.userData.type = "rod";
   const rodLight = new THREE.PointLight(0xff0000, 50, 30);
   preloadedRod.add(rodLight);
+});
+
+//preloade smoke
+loader.load('modeler/HappyLys/smoke_effect_blue.glb', (gltf) => {
+  preloadedSmoke = gltf.scene;
+  preloadedSmoke.scale.set(20, 20, 20);
+  preloadedSmoke.userData.type = "smoke";
+  const smokeLight = new THREE.PointLight(0xff0000, 50, 30);
+  preloadedSmoke.add(smokeLight);
 });
 
 // Stage 1 - kun lys
@@ -215,13 +225,22 @@ export function happyLys6(scene, camera, globals) {
   const lights = [];
   const stars = [];
   
-  // Tilføj dine NYE elementer her
+  // NYE elementer 
   const nytLys = new THREE.DirectionalLight(0xff00ff, 20);
   nytLys.position.set(5, 30, 10);
   nytLys.target.position.set(10, 5, -30);
   scene.add(nytLys, nytLys.target);
   lights.push(nytLys, nytLys.target);
   
+
+  // smoke (NYT)
+  if (preloadedSmoke) {
+    const smoke = preloadedSmoke.clone(true);
+    smoke.scale.set(2, 2, 2);
+    scene.add(smoke);
+    stars.push(smoke);
+  }
+
   globals.stage6Added = true; 
   return { lights, stars };
 }
@@ -238,7 +257,6 @@ export function happyLys7(scene, camera, globals) {
   const lights = [];
   const stars = [];
 
- console.log(`✅ Stage 7: Tilføjet ${stars.length} stjerner`);
   globals.stage7Added = true; 
   return { lights, stars };
 }
@@ -250,42 +268,9 @@ export function happyLys8(scene, camera, globals) {
     console.log("⚠️ Stage 8 allerede tilføjet");
     return { lights: [], stars: [] };
   }
-    //if (!preloadedFirework) return { lights: [], stars: [] };
   const lights = [];
   const stars = [];
-  
-  console.log(`✅ Stage 8: Tilføjet ${stars.length} stjerner`);
+
   globals.stage8Added = true; 
-  return { lights, stars };
-}
-
-// --- Stage 9 ---
-export function happyLys9(scene, camera, globals) {
-  console.log("🔵 Stage 9 kaldt");
-  if (globals.stage9Added) {
-    console.log("⚠️ Stage 9 allerede tilføjet");
-    return { lights: [], stars: [] };
-  }
-      //if (!preloadedFirework) return { lights: [], stars: [] };
-  const lights = [];
-  const stars = [];
-
-  console.log(`✅ Stage 9: Tilføjet ${stars.length} stjerner`);
-  globals.stage9Added = true; 
-  return { lights, stars };
-}
-
-
-// --- Stage 10 ---
-export function happyLys10(scene, camera, globals) {
-  console.log("🔵 Stage 10 kaldt");
-  if (globals.stage10Added) {
-    console.log("⚠️ Stage 10 allerede tilføjet");
-    return { lights: [], stars: [] };
-  }
-  const lights = [];
-  const stars = [];
-  console.log(`✅ Stage 10: Tilføjet ${stars.length} stjerner`);
-  globals.stage10Added = true; 
   return { lights, stars };
 }

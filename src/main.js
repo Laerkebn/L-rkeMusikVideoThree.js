@@ -8,7 +8,7 @@ import { loadPerson } from './spiller.js';
 import GUI from 'three/examples/jsm/libs/lil-gui.module.min.js';
 import { loadLys } from './lys.js';
 import { setupKeyboard } from './knapper.js';
-import { happyLys1, happyLys2, happyLys3, happyLys4, happyLys5, happyLys6, happyLys7, happyLys8, happyLys9, happyLys10} from './happy.js';
+import { happyLys1, happyLys2, happyLys3, happyLys4, happyLys5, happyLys6, happyLys7, happyLys8} from './happy.js';
 import { startAnimation } from './animate.js';
 
 // Renderer
@@ -78,8 +78,6 @@ const globals = {
   stage6Added: false,
   stage7Added: false,
   stage8Added: false,
-  stage9Added: false,
-  stage10Added: false
 };
 
 // Setup keyboard events (styrer lys/stjerner på space-klik)

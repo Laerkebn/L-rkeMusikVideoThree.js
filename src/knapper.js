@@ -10,12 +10,10 @@ import {
   happyLys6, 
   happyLys7, 
   happyLys8, 
-  happyLys9, 
-  happyLys10 
 } from './happy.js';
 
 export function setupKeyboard(scene, globals) {
-  const maxSpace = 10;
+  const maxSpace = 8;
 
   // Gem alle stages permanent (genbruges hver gang)
   if (!globals.permanentStages) {
@@ -62,8 +60,6 @@ if (pillImage && globals.spaceCount <= pillImages.length) {
         happyLys6,
         happyLys7,
         happyLys8,
-        happyLys9,
-        happyLys10
       ];
 
       // Tilføj ALLE stages op til det nuværende level
@@ -111,8 +107,6 @@ if (pillImage && globals.spaceCount <= pillImages.length) {
       globals.stage6Added = false;
       globals.stage7Added = false;
       globals.stage8Added = false;
-      globals.stage9Added = false;
-      globals.stage10Added = false;
 
       // Musik
       globals.soundFarve.pauseSound();
