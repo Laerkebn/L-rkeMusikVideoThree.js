@@ -11,7 +11,7 @@ export let preloadedFirework = null;
 export let preloadedGlitter = null;
 export let preloadedRod = null;
 export let preloadedSmoke = null
-export let preloadeSmoke = null
+export let preloadedTunnel = null
 
 manager.onLoad = () => {
   console.log("✅ Alle modeller er preloaded!");
@@ -44,7 +44,7 @@ loader.load('modeler/HappyLys/glitter_flow.glb', (gltf) => {
 // Preload rod
 loader.load('modeler/HappyLys/rod.glb', (gltf) => {
   preloadedRod = gltf.scene;
-  preloadedRod.scale.set(20, 20, 20);
+  preloadedRod.scale.set(10, 10, 10);
   preloadedRod.userData.type = "rod";
   const rodLight = new THREE.PointLight(0xff0000, 50, 30);
   preloadedRod.add(rodLight);
@@ -59,6 +59,14 @@ loader.load('modeler/HappyLys/smoke_effect_blue.glb', (gltf) => {
   preloadedSmoke.add(smokeLight);
 });
 
+//preloade Tunnel
+loader.load('modeler/HappyLys/tunnel.glb', (gltf) => {
+  preloadedTunnel = gltf.scene;
+  preloadedTunnel.scale.set(1, 1, 1);
+  preloadedTunnel.userData.type = "tunnel";
+  const tunnelLight = new THREE.PointLight(0xff0000, 50, 30);
+  preloadedTunnel.add(tunnelLight);
+});
 
 // Stage 1 - kun lys
 export function happyLys1(scene, camera, globals) {
@@ -260,6 +268,17 @@ export function happyLys7(scene, camera, globals) {
   //if (!preloadedFirework) return { lights: [], stars: [] };
   const lights = [];
   const stars = [];
+
+  // tunnel (NYT)
+  if (preloadedTunnel) {
+    const tunnel = preloadedTunnel.clone(true);
+    tunnel.position.set(0, 0, 0); // Sæt initial position
+   tunnel.scale.set(3, 3, 3); // Meget mindre størrelse først
+    console.log("✅ tunnel tilføjet til scene"); // DEBUG
+
+    scene.add(tunnel);
+    stars.push(tunnel);
+  }
 
   globals.stage7Added = true; 
   return { lights, stars };

@@ -103,6 +103,13 @@ if (s.userData.type === "smoke") {
   return;
 }
 
+//Tunnel følger spiller
+if (s.userData.type === "tunnel") {
+    const offset = new THREE.Vector3(0, -1000, 0); // Længde foran spilleren
+    s.position.copy(spiller.position).add(offset);
+}
+
+
 
 // Stjerner (følger spilleren)
 const idx = globals.activeStars.indexOf(s);
