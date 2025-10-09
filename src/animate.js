@@ -7,13 +7,21 @@ export function startAnimation(scene, camera, spiller, globals, renderer) {
 
   // Video trigger koordinat og tolerance
   const triggerPoint = { x: 0, y: 1, z: -165 };
-  const triggerRadius = 10; // hvor tæt spilleren skal være
+  const triggerRadius = 10; 
+    // Trigger for slutning 2
+  const triggerPoint2 = { x: 0, y: 200,};
   let videoTriggered = false;
+  let videoPlaying = false; // 🔥 Tilføjet variabel
   let instructionTextElement = null;
+
+  // Funktion til at sætte video status
+  function setVideoPlaying(status) {
+    videoPlaying = status;
+  }
 
   // Funktion til at oprette instruktion tekst
   function createInstructionText() {
-    if (instructionTextElement) return; // Undgå duplikater
+    if (instructionTextElement) return; 
     
     instructionTextElement = document.createElement('div');
     instructionTextElement.style.cssText = `
@@ -28,7 +36,7 @@ export function startAnimation(scene, camera, spiller, globals, renderer) {
       z-index: 100;
       pointer-events: none;
     `;
-    instructionTextElement.textContent = 'Keep walking to get inside ';
+    instructionTextElement.textContent = 'Keep walking to get inside';
     document.body.appendChild(instructionTextElement);
   }
 
@@ -53,7 +61,6 @@ export function startAnimation(scene, camera, spiller, globals, renderer) {
       removeInstructionText();
     }
 
-    // DEBUG - se hvad der sker
     if (spiller.position.z < -170) {
       console.log("Distance:", distance.toFixed(2), "Position:", spiller.position.z.toFixed(2));
     }
@@ -66,11 +73,12 @@ export function startAnimation(scene, camera, spiller, globals, renderer) {
     }
   }
 
-  // Funktion til at afspille video
+  // 🎥 Funktion til at afspille video
   function playVideo() {
     console.log("🎥 playVideo() function called!");
-    
-    // Opret video overlay
+    setVideoPlaying(true); // 🔥 deaktiver andre scripts
+
+    // Opret overlay
     const videoOverlay = document.createElement('div');
     videoOverlay.id = 'videoOverlay';
     videoOverlay.style.cssText = `
@@ -91,32 +99,19 @@ export function startAnimation(scene, camera, spiller, globals, renderer) {
       max-width: 90%;
       max-height: 90%;
     `;
-    
-    // Ret sti (fjern /public/)
-    const videoPath = 'puplic/Lyd/test.mp4';
+    const videoPath = 'lyd/test.mp4'; // 🔥 Tilføjet / i starten
     console.log("Trying to load video from:", videoPath);
     video.src = videoPath;
     video.controls = true;
     video.autoplay = true;
-    
-    // Error handling
+
+    // Fejlhåndtering
     video.addEventListener('error', (e) => {
       console.error("❌ Video failed to load!", e);
-      console.error("Tried path:", videoPath);
       alert("Video kunne ikke loades. Tjek console for fejl.");
     });
-    
-    video.addEventListener('loadeddata', () => {
-      console.log("✅ Video loaded successfully!");
-    });
 
-    // Luk video når den er færdig
-    video.addEventListener('ended', () => {
-      document.body.removeChild(videoOverlay);
-      videoTriggered = false;
-    });
-
-    // Tilføj luk knap
+    // Luk-knap
     const closeBtn = document.createElement('button');
     closeBtn.textContent = '✕';
     closeBtn.style.cssText = `
@@ -134,30 +129,55 @@ export function startAnimation(scene, camera, spiller, globals, renderer) {
       z-index: 1001;
     `;
     closeBtn.addEventListener('click', () => {
-      // Gå tilbage til forsiden (index.html)
+      setVideoPlaying(false);
       window.location.href = 'index.html';
     });
 
     videoOverlay.appendChild(video);
     videoOverlay.appendChild(closeBtn);
     document.body.appendChild(videoOverlay);
-    
+
     console.log("Video overlay added to document");
   }
 
   function animate() {
     requestAnimationFrame(animate);
 
-    // Bevæger spilleren fremad hvis space holdes
-    if (globals.isSpacePressed) {
-      globals.hastighed += acceleration;
-      globals.hastighed = Math.min(globals.hastighed, maxHastighed);
-      spiller.position.z -= globals.hastighed;
-      spiller.position.y = 1 + Math.sin(Date.now() * 0.01) * 0.05;
+    // 💡 Tjek om video spiller
+    if (videoPlaying) {
+      renderer.render(scene, camera);
+      return; // stop alt andet mens video kører
     }
 
-    // Tjek for video trigger (tjek altid, ikke kun når space trykkes)
+// 🚀 Automatisk flyvning i Stage 8
+    if (globals.stage8Active && !globals.stage8VideoTriggered) {
+      const upwardSpeed = 0.07;
+      const targetY = 200; // Slutning 2
+      spiller.position.y += upwardSpeed;
+
+      if (spiller.position.y >= targetY) {
+        globals.stage8VideoTriggered = true;
+        globals.stage8Active = false;
+        console.log("🎬 Slutning 2 triggered ved Y =", spiller.position.y);
+        playVideo();
+        return;
+      }
+    }
+    
+// 🟢 Tjek første trigger (slutning 1)
+  if (!globals.stage8Active) {
     checkVideoTrigger();
+  } else {
+    removeInstructionText();
+  }
+
+   // Normal bevægelse 
+  if (!globals.stage8Active && globals.isSpacePressed) {
+    globals.hastighed += acceleration;
+    globals.hastighed = Math.min(globals.hastighed, maxHastighed);
+    spiller.position.z -= globals.hastighed;
+    spiller.position.y = 1 + Math.sin(Date.now() * 0.01) * 0.05;
+  }
 
     // Kamera følger spilleren
     camera.position.copy(spiller.position).add(new THREE.Vector3(0, 1.5, 0));
@@ -234,12 +254,23 @@ export function startAnimation(scene, camera, spiller, globals, renderer) {
 
         return;
       }
+if (globals.stage8Active && globals.tunnel) {
+  const tunnel = globals.tunnel;
 
-      //Tunnel følger spiller
-      if (s.userData.type === "tunnel") {
-        const offset = new THREE.Vector3(0, -1000, 0);
-        s.position.copy(spiller.position).add(offset);
-      }
+  // Sæt pivot til bunden af tunnelen
+  const bbox = new THREE.Box3().setFromObject(tunnel);
+  const height = bbox.max.y - bbox.min.y;
+
+  const offsetY = -40; // juster lidt op, hvis nødvendigt
+  tunnel.position.set(
+    camera.position.x,
+    camera.position.y - bbox.min.y + offsetY,
+    camera.position.z +20, 
+  );
+
+  // Rotation, så tunnelen peger fremad
+  tunnel.rotation.set(-Math.PI / 2, Math.PI, 0);
+}
 
       // Stjerner (følger spilleren)
       const idx = globals.activeStars.indexOf(s);

@@ -106,7 +106,6 @@ if (pillImage && globals.spaceCount <= pillImages.length) {
       globals.stage5Added = false;
       globals.stage6Added = false;
       globals.stage7Added = false;
-      globals.stage8Added = false;
 
       // Musik
       globals.soundFarve.pauseSound();

@@ -11,6 +11,7 @@ export let preloadedFirework = null;
 export let preloadedGlitter = null;
 export let preloadedRod = null;
 export let preloadedSmoke = null
+export let preloadeSmokeRing = null
 export let preloadedTunnel = null
 
 manager.onLoad = () => {
@@ -59,10 +60,20 @@ loader.load('modeler/HappyLys/smoke_effect_blue.glb', (gltf) => {
   preloadedSmoke.add(smokeLight);
 });
 
+//preloade smokeRing
+loader.load('modeler/HappyLys/smokeRing.glb', (gltf) => {
+  preloadeSmokeRing = gltf.scene;
+  preloadeSmokeRing.scale.set(1, 1, 1);
+  preloadeSmokeRing.userData.type = "smokeRing";
+  const smokeRingLight = new THREE.PointLight(0xff0000, 50, 30);
+  preloadeSmokeRing.add(smokeRingLight);
+});
+
+
 //preloade Tunnel
 loader.load('modeler/HappyLys/tunnel.glb', (gltf) => {
   preloadedTunnel = gltf.scene;
-  preloadedTunnel.scale.set(1, 1, 1);
+  preloadedTunnel.scale.set(2, 2, 2);
   preloadedTunnel.userData.type = "tunnel";
   const tunnelLight = new THREE.PointLight(0xff0000, 50, 30);
   preloadedTunnel.add(tunnelLight);
@@ -262,38 +273,54 @@ export function happyLys6(scene, camera, globals) {
 export function happyLys7(scene, camera, globals) {
   //.log("🔵 Stage 7 kaldt");
   if (globals.stage7Added) {
-   //console.log("⚠️ Stage 7 allerede tilføjet");
     return { lights: [], stars: [] };
   }
-  //if (!preloadedFirework) return { lights: [], stars: [] };
   const lights = [];
   const stars = [];
 
-  // tunnel (NYT)
-  if (preloadedTunnel) {
-    const tunnel = preloadedTunnel.clone(true);
-    tunnel.position.set(0, 0, 0); // Sæt initial position
-   tunnel.scale.set(3, 3, 3); // Meget mindre størrelse først
-    //console.log("✅ tunnel tilføjet til scene"); // DEBUG
+  // smokeRing (NYT)
+ if (preloadeSmokeRing) {
+  const smokeRing = preloadeSmokeRing.clone(true);
+  smokeRing.position.set(0, 10, -10);
+smokeRing.scale.set(3, 3, 3);
 
-    scene.add(tunnel);
-    stars.push(tunnel);
-  }
+  scene.add(smokeRing);
+  stars.push(smokeRing);
+}
 
   globals.stage7Added = true; 
   return { lights, stars };
 }
 
-// --- Stage 8 ---
+// Stage 8
 export function happyLys8(scene, camera, globals) {
-  //console.log("🔵 Stage 8 kaldt");
   if (globals.stage8Added) {
-    //console.log("⚠️ Stage 8 allerede tilføjet");
     return { lights: [], stars: [] };
   }
+
   const lights = [];
   const stars = [];
 
-  globals.stage8Added = true; 
+  if (preloadedTunnel) {
+    const tunnel = preloadedTunnel.clone(true);
+
+    tunnel.position.set(0, 0, 0); 
+    tunnel.rotation.x = -Math.PI / 2;
+    tunnel.rotation.y = Math.PI;
+
+    const tunnelLight = new THREE.PointLight(0xffffff, 200, 500);
+    tunnel.add(tunnelLight);  // lys følger tunnelen
+
+    scene.add(tunnel);
+    stars.push(tunnel, tunnelLight);
+
+    globals.tunnel = tunnel; // 💾 Gem referencen
+  }
+
+  globals.stage8Active = true;
+  globals.stage8Added = true;
+
+  console.log("🚀 Stage 8 aktiveret!");
   return { lights, stars };
 }
+

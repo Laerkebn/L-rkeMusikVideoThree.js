@@ -78,7 +78,12 @@ const globals = {
   stage6Added: false,
   stage7Added: false,
   stage8Added: false,
+  spiller,
+  stage8Active: false,
+  stage8VideoTriggered: false,
 };
+
+ 
 
 
 // Setup keyboard events (styrer lys/stjerner på space-klik)
