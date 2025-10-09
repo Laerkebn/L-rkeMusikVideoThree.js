@@ -6,7 +6,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 export function loadCity(scene) {
   // Loader baggrund 
   const loaderBagrund = new THREE.TextureLoader();
-  loaderBagrund.load('/Billeder/nattehimmel.jpg', function (texture) {
+  loaderBagrund.load('Billeder/nattehimmel.jpg', function (texture) {
     const geometry = new THREE.SphereGeometry(500, 32, 32);
     const material = new THREE.MeshBasicMaterial({
       map: texture,
