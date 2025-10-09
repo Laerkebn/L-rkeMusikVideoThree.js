@@ -14,7 +14,7 @@ export let preloadedSmoke = null
 export let preloadedTunnel = null
 
 manager.onLoad = () => {
-  console.log("✅ Alle modeller er preloaded!");
+  //console.log("✅ Alle modeller er preloaded!");
 };
 
 // Preload stjerne
@@ -105,17 +105,17 @@ export function happyLys1(scene, camera, globals) {
 
 // Stage 2 - tilføj NYE lys + stjerner
 export function happyLys2(scene, camera, globals) {
-  console.log("🔵 Stage 2 kaldt");
+  //console.log("🔵 Stage 2 kaldt");
   if (globals.stage2Added) {
-    console.log("⚠️ Stage 2 allerede tilføjet");
+    //console.log("⚠️ Stage 2 allerede tilføjet");
     return { lights: [], stars: [] };
   }
  if (!preloadedStar) {
-    console.log("❌ Stage 2: preloadedStar er ikke klar endnu!");
+    //console.log("❌ Stage 2: preloadedStar er ikke klar endnu!");
     return { lights: [], stars: [] };
   }
 
-  console.log("✅ Stage 2: Tilføjer stjerner");
+  //console.log("✅ Stage 2: Tilføjer stjerner");
   const lights = [];
   const stars = [];
 
@@ -150,16 +150,16 @@ export function happyLys2(scene, camera, globals) {
   }
 
 
-  console.log(`✅ Stage 2: Tilføjet ${stars.length} stjerner`);
+  //console.log(`✅ Stage 2: Tilføjet ${stars.length} stjerner`);
   globals.stage2Added = true; 
   return { lights, stars };
 }
 
 // Stage 3 - tilføj kun NYE lys + fyrværkeri
 export function happyLys3(scene, camera, globals) {
-  console.log("🔵 Stage 3 kaldt");
+  //console.log("🔵 Stage 3 kaldt");
   if (globals.stage3Added) {
-    console.log("⚠️ Stage 3 allerede tilføjet");
+    //console.log("⚠️ Stage 3 allerede tilføjet");
     return { lights: [], stars: [] };
   }
   const lights = [];
@@ -171,7 +171,7 @@ export function happyLys3(scene, camera, globals) {
     scene.add(firework);
     stars.push(firework);
   }
-console.log(`✅ Stage 3: Tilføjet ${stars.length} stjerner`);
+//console.log(`✅ Stage 3: Tilføjet ${stars.length} stjerner`);
   globals.stage3Added = true; 
   return { lights, stars };
 }
@@ -179,9 +179,9 @@ console.log(`✅ Stage 3: Tilføjet ${stars.length} stjerner`);
 
 // Stage 4 - tilføj kun NYE lys + glitter
 export function happyLys4(scene, camera, globals) {
-  console.log("🔵 Stage 4 kaldt");
+  //.log("🔵 Stage 4 kaldt");
   if (globals.stage4Added) {
-    console.log("⚠️ Stage 4 allerede tilføjet");
+    //console.log("⚠️ Stage 4 allerede tilføjet");
     return { lights: [], stars: [] };
   }
   const lights = [];
@@ -194,7 +194,7 @@ export function happyLys4(scene, camera, globals) {
     scene.add(glitter);
     stars.push(glitter);
   }
-console.log(`✅ Stage 4: Tilføjet ${stars.length} stjerner`);
+//console.log(`✅ Stage 4: Tilføjet ${stars.length} stjerner`);
   globals.stage4Added = true; 
   return { lights, stars };
 }
@@ -202,9 +202,9 @@ console.log(`✅ Stage 4: Tilføjet ${stars.length} stjerner`);
 
 // Stage 5 - tilføj kun NYE lys + rod
 export function happyLys5(scene, camera, globals) {
-  console.log("🔵 Stage 5 kaldt");
+  //console.log("🔵 Stage 5 kaldt");
   if (globals.stage5Added) {
-    console.log("⚠️ Stage 5 allerede tilføjet");
+    //console.log("⚠️ Stage 5 allerede tilføjet");
     return { lights: [], stars: [] };
 
   }
@@ -228,9 +228,9 @@ export function happyLys5(scene, camera, globals) {
 
 // Stage 6
 export function happyLys6(scene, camera, globals) {
-  console.log("🔵 Stage 6 kaldt");
+  //console.log("🔵 Stage 6 kaldt");
   if (globals.stage6Added) {
-    console.log("⚠️ Stage 6 allerede tilføjet");
+   // console.log("⚠️ Stage 6 allerede tilføjet");
     return { lights: [], stars: [] };
   }
   const lights = [];
@@ -248,7 +248,7 @@ export function happyLys6(scene, camera, globals) {
     const smoke = preloadedSmoke.clone(true);
     smoke.position.set(0, 2, -10); // Sæt initial position
     smoke.scale.set(0.03, 0.03, 0.03); // Meget mindre størrelse først
-    console.log("✅ Smoke tilføjet til scene"); // DEBUG
+    //console.log("✅ Smoke tilføjet til scene"); // DEBUG
 
     scene.add(smoke);
     stars.push(smoke);
@@ -260,9 +260,9 @@ export function happyLys6(scene, camera, globals) {
 
 // --- Stage 7 ---
 export function happyLys7(scene, camera, globals) {
-  console.log("🔵 Stage 7 kaldt");
+  //.log("🔵 Stage 7 kaldt");
   if (globals.stage7Added) {
-    console.log("⚠️ Stage 7 allerede tilføjet");
+   //console.log("⚠️ Stage 7 allerede tilføjet");
     return { lights: [], stars: [] };
   }
   //if (!preloadedFirework) return { lights: [], stars: [] };
@@ -274,7 +274,7 @@ export function happyLys7(scene, camera, globals) {
     const tunnel = preloadedTunnel.clone(true);
     tunnel.position.set(0, 0, 0); // Sæt initial position
    tunnel.scale.set(3, 3, 3); // Meget mindre størrelse først
-    console.log("✅ tunnel tilføjet til scene"); // DEBUG
+    //console.log("✅ tunnel tilføjet til scene"); // DEBUG
 
     scene.add(tunnel);
     stars.push(tunnel);
@@ -286,9 +286,9 @@ export function happyLys7(scene, camera, globals) {
 
 // --- Stage 8 ---
 export function happyLys8(scene, camera, globals) {
-  console.log("🔵 Stage 8 kaldt");
+  //console.log("🔵 Stage 8 kaldt");
   if (globals.stage8Added) {
-    console.log("⚠️ Stage 8 allerede tilføjet");
+    //console.log("⚠️ Stage 8 allerede tilføjet");
     return { lights: [], stars: [] };
   }
   const lights = [];

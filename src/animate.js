@@ -1,9 +1,120 @@
+
 import './style.css';
 import * as THREE from 'three';
 
 export function startAnimation(scene, camera, spiller, globals, renderer) {
-  const maxHastighed = 0.07;
+  const maxHastighed = 1;
   const acceleration = 0.01;
+
+ 
+  // Video trigger koordinat og tolerance
+  const triggerPoint = { x: 0, y: 1, z: -165 };
+  const triggerRadius = 10; // hvor tæt spilleren skal være
+  let videoTriggered = false;
+  let instructionTextElement = null;
+
+   // Funktion til at oprette instruktion tekst
+  function createInstructionText() {
+    if (instructionTextElement) return; // Undgå duplikater
+    
+    // Vis tekst når spilleren er tæt på (men ikke helt inde i trigger zone)
+    if (distance < triggerRadius + 5 && distance >= triggerRadius && !videoTriggered) {
+      createInstructionText();
+    } else if (distance >= triggerRadius + 5 || videoTriggered) {
+      removeInstructionText();
+    }
+
+    // DEBUG - se hvad der sker
+    if (spiller.position.z < -170) {
+      console.log("Distance:", distance.toFixed(2), "Position:", spiller.position.z.toFixed(2));
+    }
+
+    if (distance < triggerRadius && !videoTriggered) {
+      videoTriggered = true;
+      removeInstructionText();
+      console.log("🎬 VIDEO TRIGGERED!");
+      playVideo();
+    }
+  }
+
+  // Funktion til at afspille video
+  function playVideo() {
+    console.log("🎥 playVideo() function called!");
+    
+    // Opret video overlay
+    const videoOverlay = document.createElement('div');
+    videoOverlay.id = 'videoOverlay';
+    videoOverlay.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: black;
+      z-index: 1000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    `;
+
+    const video = document.createElement('video');
+    video.style.cssText = `
+      max-width: 90%;
+      max-height: 90%;
+    `;
+    
+    // Prøv forskellige stier
+    const videoPath = '/public/Lyd/test.mp4';
+    console.log("Trying to load video from:", videoPath);
+    video.src = videoPath;
+    video.controls = true;
+    video.autoplay = true;
+    
+    // Error handling
+    video.addEventListener('error', (e) => {
+      console.error("❌ Video failed to load!", e);
+      console.error("Tried path:", videoPath);
+      alert("Video kunne ikke loades. Tjek console for fejl.");
+    });
+    
+    video.addEventListener('loadeddata', () => {
+      console.log("✅ Video loaded successfully!");
+    });
+
+    // Luk video når den er færdig
+    video.addEventListener('ended', () => {
+      document.body.removeChild(videoOverlay);
+      videoTriggered = false;
+    });
+
+    // Tilføj luk knap
+    const closeBtn = document.createElement('button');
+    closeBtn.textContent = '✕';
+    closeBtn.style.cssText = `
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(255,255,255,0.2);
+      border: 2px solid white;
+      color: white;
+      font-size: 24px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      z-index: 1001;
+    `;
+    closeBtn.addEventListener('click', () => {
+      // Gå tilbage til forsiden (index.html)
+      window.location.href = 'index.html';
+    });
+
+    videoOverlay.appendChild(video);
+    videoOverlay.appendChild(closeBtn);
+    document.body.appendChild(videoOverlay);
+    
+    console.log("Video overlay added to document");
+  }
 
   function animate() {
     requestAnimationFrame(animate);
@@ -16,18 +127,19 @@ export function startAnimation(scene, camera, spiller, globals, renderer) {
       spiller.position.y = 1 + Math.sin(Date.now() * 0.01) * 0.05;
     }
 
+    // Tjek for video trigger (tjek altid, ikke kun når space trykkes)
+    checkVideoTrigger();
+
     // Kamera følger spilleren
     camera.position.copy(spiller.position).add(new THREE.Vector3(0, 1.5, 0));
 
-        // SkySphere følger spilleren (men roterer ikke)
+    // SkySphere følger spilleren (men roterer ikke)
     if (window.skySphere) {
       window.skySphere.position.copy(spiller.position);
     }
 
     // Opdater alle aktive objekter
     globals.activeStars.forEach((s) => {
-
-      
       // Fyrværkeri (følger kameraet og blinker)
       if (s.userData.type === "firework") {
         const offset = new THREE.Vector3(0, 0, -3);
@@ -52,67 +164,56 @@ export function startAnimation(scene, camera, spiller, globals, renderer) {
         return;
       }
 
+      // Rod
+      if (s.userData.type === "rod") {
+        const offsetForward = 20;
+        const flyUpSpeed = 1;
+        const threshold = 2;
 
-// Rod
-if (s.userData.type === "rod") {
-  const offsetForward = 20;  // hvor langt foran spilleren den skal stå
-  const flyUpSpeed = 1;    // hvor hurtigt den flyver frem
-  const threshold = 2;       // hvor langt bagud den må komme før den flyver frem igen
+        const spillerPos = spiller.position.clone();
+        const rodPos = s.position.clone();
 
-  const spillerPos = spiller.position.clone();
-  const rodPos = s.position.clone();
+        const forward = new THREE.Vector3(0, 0, -1);
+        const targetPos = spillerPos.clone().add(forward.multiplyScalar(offsetForward));
 
-  // Vi bruger en fast bevægelsesretning (langs -Z)
-  const forward = new THREE.Vector3(0, 0, -1);
-  const targetPos = spillerPos.clone().add(forward.multiplyScalar(offsetForward));
+        const dz = spillerPos.z - rodPos.z;
 
-  // Tjek hvor langt bagved roden er ift. spilleren
-  const dz = spillerPos.z - rodPos.z;
+        if (dz < -threshold) {
+          s.position.lerp(targetPos, flyUpSpeed);
+        }
+        return;
+      }
 
-  if (dz < -threshold) {
-    // Hvis roden er foran → gør ingenting
-    // Hvis roden er for langt bag → flyv frem foran igen
-    s.position.lerp(targetPos, flyUpSpeed);
-  }
-  return;
-}
+      // Smoke (følger spilleren, falder kun i Y)
+      if (s.userData.type === "smoke") {
+        if (s.userData.velocity === undefined) {
+          s.userData.velocity = 0.09;
+        }
 
-// Smoke (følger spilleren, falder kun i Y)
-if (s.userData.type === "smoke") {
-  // Sæt en faldhastighed hvis den ikke allerede findes
-  if (s.userData.velocity === undefined) {
-    s.userData.velocity = 0.09; // juster hastigheden her
-  }
+        s.position.y -= s.userData.velocity;
 
-  // Opdater Y
-  s.position.y -= s.userData.velocity;
+        const offsetX = -0.5;
+        const offsetZ = -20;
+        s.position.x = spiller.position.x + offsetX;
+        s.position.z = spiller.position.z + offsetZ;
 
-  // Hold X og Z relativt til spilleren
-  const offsetX = -0.5; // venstre/højre
-  const offsetZ = -20;  // foran/bag spilleren
-  s.position.x = spiller.position.x + offsetX;
-  s.position.z = spiller.position.z + offsetZ;
+        const minY = -6;
+        const maxY = 20;
+        if (s.position.y < minY) {
+          s.position.y = maxY;
+        }
 
-  // Når den når for langt ned, reset til toppen
-  const minY = -6;   // laveste punkt
-  const maxY = 20;   // hvor den respawner
-  if (s.position.y < minY) {
-    s.position.y = maxY;
-  }
+        return;
+      }
 
-  return;
-}
+      //Tunnel følger spiller
+      if (s.userData.type === "tunnel") {
+        const offset = new THREE.Vector3(0, -1000, 0);
+        s.position.copy(spiller.position).add(offset);
+      }
 
-//Tunnel følger spiller
-if (s.userData.type === "tunnel") {
-    const offset = new THREE.Vector3(0, -1000, 0); // Længde foran spilleren
-    s.position.copy(spiller.position).add(offset);
-}
-
-
-
-// Stjerner (følger spilleren)
-const idx = globals.activeStars.indexOf(s);
+      // Stjerner (følger spilleren)
+      const idx = globals.activeStars.indexOf(s);
       const afstandZ = 3;
       const sideAfstand = 2;
       const højde = -0.39;
@@ -126,12 +227,9 @@ const idx = globals.activeStars.indexOf(s);
       );
     });
 
-
-
     // Tegn scenen
     renderer.render(scene, camera);
   }
 
   // Start animation
   animate();
-}

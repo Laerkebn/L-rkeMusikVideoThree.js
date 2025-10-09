@@ -44,6 +44,16 @@ export function loadCity(scene) {
     building.rotation.y = Math.PI;
 
     scene.add(building);
+
+    const building2 = building.clone();
+    building2.scale.set(5, 5, 5);
+    building2.rotation.y = Math.PI * 1.5 ;
+    building2.position.set(-1.5, -85, -175);
+  
+    
+
+     scene.add(building2);
+    
   });
 
   // Club

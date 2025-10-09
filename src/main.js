@@ -80,11 +80,10 @@ const globals = {
   stage8Added: false,
 };
 
+
 // Setup keyboard events (styrer lys/stjerner på space-klik)
 setupKeyboard(scene, globals);
 
-// Start animationen
+// Start animationen (dette starter animate loop'et)
 startAnimation(scene, camera, spiller, globals, renderer);
 
-// Start animation
-animate();

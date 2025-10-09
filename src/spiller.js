@@ -33,7 +33,7 @@ export function loadPerson(scene, camera) {
     camera.add(hands);
     scene.add(camera);
   }, undefined, (error) => {
-    console.error('Error loading hands:', error);
+    //console.error('Error loading hands:', error);
   });
 
   return spiller;
