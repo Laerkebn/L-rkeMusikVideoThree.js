@@ -1,22 +1,51 @@
-
 import './style.css';
 import * as THREE from 'three';
 
 export function startAnimation(scene, camera, spiller, globals, renderer) {
-  const maxHastighed = 1;
+  const maxHastighed = 0.07;
   const acceleration = 0.01;
 
- 
   // Video trigger koordinat og tolerance
   const triggerPoint = { x: 0, y: 1, z: -165 };
   const triggerRadius = 10; // hvor tæt spilleren skal være
   let videoTriggered = false;
   let instructionTextElement = null;
 
-   // Funktion til at oprette instruktion tekst
+  // Funktion til at oprette instruktion tekst
   function createInstructionText() {
     if (instructionTextElement) return; // Undgå duplikater
     
+    instructionTextElement = document.createElement('div');
+    instructionTextElement.style.cssText = `
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-size: 24px;
+      font-weight: bold;
+      text-shadow: 2px 2px 4px black;
+      z-index: 100;
+      pointer-events: none;
+    `;
+    instructionTextElement.textContent = 'Keep walking to get inside ';
+    document.body.appendChild(instructionTextElement);
+  }
+
+  // Funktion til at fjerne instruktion tekst
+  function removeInstructionText() {
+    if (instructionTextElement) {
+      document.body.removeChild(instructionTextElement);
+      instructionTextElement = null;
+    }
+  }
+
+  // Funktion til at tjekke afstand til trigger point
+  function checkVideoTrigger() {
+    const distance = spiller.position.distanceTo(
+      new THREE.Vector3(triggerPoint.x, triggerPoint.y, triggerPoint.z)
+    );
+
     // Vis tekst når spilleren er tæt på (men ikke helt inde i trigger zone)
     if (distance < triggerRadius + 5 && distance >= triggerRadius && !videoTriggered) {
       createInstructionText();
@@ -63,8 +92,8 @@ export function startAnimation(scene, camera, spiller, globals, renderer) {
       max-height: 90%;
     `;
     
-    // Prøv forskellige stier
-    const videoPath = '/public/Lyd/test.mp4';
+    // Ret sti (fjern /public/)
+    const videoPath = 'puplic/Lyd/test.mp4';
     console.log("Trying to load video from:", videoPath);
     video.src = videoPath;
     video.controls = true;
@@ -233,3 +262,4 @@ export function startAnimation(scene, camera, spiller, globals, renderer) {
 
   // Start animation
   animate();
+}
