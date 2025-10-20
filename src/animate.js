@@ -1,3 +1,4 @@
+
 import './style.css';
 import * as THREE from 'three';
 
@@ -8,10 +9,11 @@ export function startAnimation(scene, camera, spiller, globals, renderer) {
   // Video trigger koordinat og tolerance
   const triggerPoint = { x: 0, y: 1, z: -165 };
   const triggerRadius = 10; 
-    // Trigger for slutning 2
-  const triggerPoint2 = { x: 0, y: 200,};
+  // Trigger for slutning 2 (y-koordinat)
+  const triggerYCoordinate = 70;
   let videoTriggered = false;
-  let videoPlaying = false; // 🔥 Tilføjet variabel
+  let videoTriggered2 = false; // For y-koordinat trigger
+  let videoPlaying = false;
   let instructionTextElement = null;
 
   // Funktion til at sætte video status
@@ -69,14 +71,14 @@ export function startAnimation(scene, camera, spiller, globals, renderer) {
       videoTriggered = true;
       removeInstructionText();
       console.log("🎬 VIDEO TRIGGERED!");
-      playVideo();
+      playVideo('test.mp4'); // Video 1
     }
   }
 
-  // 🎥 Funktion til at afspille video
-  function playVideo() {
-    console.log("🎥 playVideo() function called!");
-    setVideoPlaying(true); // 🔥 deaktiver andre scripts
+  // 🎥 Funktion til at afspille video - nu med parameter for filnavn
+  function playVideo(videoFileName = 'test.mp4') {
+    console.log("🎥 playVideo() function called with:", videoFileName);
+    setVideoPlaying(true);
 
     // Opret overlay
     const videoOverlay = document.createElement('div');
@@ -99,7 +101,7 @@ export function startAnimation(scene, camera, spiller, globals, renderer) {
       max-width: 90%;
       max-height: 90%;
     `;
-    const videoPath = 'lyd/test.mp4'; // 🔥 Tilføjet / i starten
+    const videoPath = `lyd/${videoFileName}`;
     console.log("Trying to load video from:", videoPath);
     video.src = videoPath;
     video.controls = true;
@@ -149,35 +151,36 @@ export function startAnimation(scene, camera, spiller, globals, renderer) {
       return; // stop alt andet mens video kører
     }
 
-// 🚀 Automatisk flyvning i Stage 8
+    // 🚀 Automatisk flyvning i Stage 8
     if (globals.stage8Active && !globals.stage8VideoTriggered) {
       const upwardSpeed = 0.07;
-      const targetY = 200; // Slutning 2
       spiller.position.y += upwardSpeed;
 
-      if (spiller.position.y >= targetY) {
+      // Tjek om spilleren har nået y-koordinat triggeren
+      if (spiller.position.y >= triggerYCoordinate && !videoTriggered2) {
+        videoTriggered2 = true;
         globals.stage8VideoTriggered = true;
         globals.stage8Active = false;
         console.log("🎬 Slutning 2 triggered ved Y =", spiller.position.y);
-        playVideo();
+        playVideo('slutning2.mov');
         return;
       }
     }
     
-// 🟢 Tjek første trigger (slutning 1)
-  if (!globals.stage8Active) {
-    checkVideoTrigger();
-  } else {
-    removeInstructionText();
-  }
+    // 🟢 Tjek første trigger (slutning 1)
+    if (!globals.stage8Active) {
+      checkVideoTrigger();
+    } else {
+      removeInstructionText();
+    }
 
-   // Normal bevægelse 
-  if (!globals.stage8Active && globals.isSpacePressed) {
-    globals.hastighed += acceleration;
-    globals.hastighed = Math.min(globals.hastighed, maxHastighed);
-    spiller.position.z -= globals.hastighed;
-    spiller.position.y = 1 + Math.sin(Date.now() * 0.01) * 0.05;
-  }
+    // Normal bevægelse 
+    if (!globals.stage8Active && globals.isSpacePressed) {
+      globals.hastighed += acceleration;
+      globals.hastighed = Math.min(globals.hastighed, maxHastighed);
+      spiller.position.z -= globals.hastighed;
+      spiller.position.y = 1 + Math.sin(Date.now() * 0.01) * 0.05;
+    }
 
     // Kamera følger spilleren
     camera.position.copy(spiller.position).add(new THREE.Vector3(0, 1.5, 0));
@@ -254,23 +257,24 @@ export function startAnimation(scene, camera, spiller, globals, renderer) {
 
         return;
       }
-if (globals.stage8Active && globals.tunnel) {
-  const tunnel = globals.tunnel;
 
-  // Sæt pivot til bunden af tunnelen
-  const bbox = new THREE.Box3().setFromObject(tunnel);
-  const height = bbox.max.y - bbox.min.y;
+      if (globals.stage8Active && globals.tunnel) {
+        const tunnel = globals.tunnel;
 
-  const offsetY = -40; // juster lidt op, hvis nødvendigt
-  tunnel.position.set(
-    camera.position.x,
-    camera.position.y - bbox.min.y + offsetY,
-    camera.position.z +20, 
-  );
+        // Sæt pivot til bunden af tunnelen
+        const bbox = new THREE.Box3().setFromObject(tunnel);
+        const height = bbox.max.y - bbox.min.y;
 
-  // Rotation, så tunnelen peger fremad
-  tunnel.rotation.set(-Math.PI / 2, Math.PI, 0);
-}
+        const offsetY = -40;
+        tunnel.position.set(
+          camera.position.x,
+          camera.position.y - bbox.min.y + offsetY,
+          camera.position.z + 20, 
+        );
+
+        // Rotation, så tunnelen peger fremad
+        tunnel.rotation.set(-Math.PI / 2, Math.PI, 0);
+      }
 
       // Stjerner (følger spilleren)
       const idx = globals.activeStars.indexOf(s);

@@ -7,32 +7,27 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="src/style.css">
 </head>
-<body class="flex justify-center items-center min-h-screen font-sans relative">
-
-  <!-- Baggrunds-video -->
-  <video autoplay muted loop playsinline class="fixed inset-0 w-full h-full object-cover -z-10">
-    <source src="video/haze.mp4" type="video/mp4">
-    Din browser understøtter ikke video.
-  </video>
-
- <div class="fixed inset-0 bg-black/60 flex items-center justify-center z-1000">
-  <div class="bg-gray-500 p-8 rounded-2xl max-w-lg text-center shadow-xl">
-    
-    <h1 class="text-4xl text-gray-700 font-bold mb-10">Something Good</h1>
-
-  
-
-    <button id="startBtn" class="text-gray-500 bg-gray-700 font-bold py-2 px-6 rounded-lg hover:scale-105 transition">
-      Start Game
-    </button>
-
-  </div>
+<body 
+class="flex justify-center items-center min-h-screen font-sans relative">
+<!-- Baggrunds-video -->
+<video autoplay muted loop playsinline class="fixed inset-0 w-full h-full object-cover -z-10">
+<source src="video/haze.mp4" type="video/mp4">
+ Din browser understøtter ikke video.
+</video>
+<div class="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+<div class="bg-gray-500 p-8 rounded-2xl max-w-lg shadow-xl">
+<h1 class="text-4xl text-gray-700 font-bold mb-10 text-left">I lost everything, I lost you. The roars from my memories of you pain me. But now that I am clean, the matador is no more and is dragged from view... But something good — oh, something good tonight, yeah, something good tonight — will make me forget about you for now.</h1>
+<div class="flex justify-center">
+<button id="startBtn" class="text-gray-500 text-3xl bg-gray-700 font-bold py-2 px-6 rounded-lg hover:scale-105 transition">
+ Next
+</button>
 </div>
-
+</div>
+</div>
 <script>
-  document.getElementById('startBtn').onclick = () => {
-    window.location.href = 'spil.html';
-  };
+document.getElementById('startBtn').onclick = () => {
+window.location.href = 'spil.html';
+ };
 </script>
 
 </body>
