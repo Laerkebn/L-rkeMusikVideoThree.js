@@ -54,10 +54,10 @@ window.addEventListener('resize', () => {
 
 // Lyd setup
 const soundFarve = new Sound(camera);  // den primære lyd
-soundFarve.loadSound('public/lyd/farve.mp3'); 
+soundFarve.loadSound('lyd/farve.mp3'); 
 
 const soundGraa = new Sound(camera);   // den alternative lyd
-soundGraa.loadSound('public/lyd/graa.mp3');
+soundGraa.loadSound('lyd/graa.mp3');
 
 // Globale variabler, som keyboard.js og animate kan bruge
 const globals = {
