@@ -6,68 +6,92 @@
 <title>The Game</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="src/style.css">
+<style>
+  /* 🔥 Fade-out animation */
+  .fade-out {
+    opacity: 0;
+    transition: opacity 1s ease;
+  }
+</style>
 </head>
 <body class="relative flex justify-center items-center min-h-screen font-sans">
   
 <!-- Baggrunds-video -->
-<video autoplay muted loop playsinline class="fixed inset-0 w-full h-full object-cover z-0">
-<source src="video/haze.mp4" type="video/mp4">
-Din browser understøtter ikke video.
+<video id="bgVideo" autoplay muted loop playsinline class="fixed inset-0 w-full h-full object-cover z-0">
+  <source src="video/haze.mp4" type="video/mp4">
+  Din browser understøtter ikke video.
 </video>
 
-<!-- FORSIDE (starter synlig) -->
+<!-- FORSIDE -->
 <div id="frontpage" class="fixed inset-0 bg-black/70 flex items-center justify-center z-10">
-<div class="bg-gray-500 p-8 rounded-2xl max-w-lg shadow-xl">
-<h1 class="text-4xl text-gray-700 font-bold mb-10 text-left">I lost everything, I lost you. The roars from my memories of you pain me. But now that I am clean, the matador is no more and is dragged from view... But something good — oh, something good tonight, yeah, something good tonight — will make me forget about you for now.</h1>
-<div class="flex justify-center">
-<button id="startBtn" class="text-gray-500 text-3xl bg-gray-700 font-bold py-2 px-6 rounded-lg hover:scale-105 transition">
-Next
-</button>
-</div>
-</div>
+  <div class="bg-gray-500 p-8 rounded-2xl max-w-lg shadow-xl">
+    <h1 class="text-4xl text-gray-700 font-bold mb-10 text-left">
+      I lost everything, I lost you. The roars from my memories of you pain me.
+      But now that I am clean, the matador is no more and is dragged from view...
+      But something good — oh, something good tonight, yeah, something good tonight —
+      will make me forget about you for now.
+    </h1>
+    <div class="flex justify-center">
+      <button id="startBtn" class="text-gray-500 text-3xl bg-gray-700 font-bold py-2 px-6 rounded-lg hover:scale-105 transition">
+        Next
+      </button>
+    </div>
+  </div>
 </div>
 
-<!-- SPIL (starter skjult) -->
+<!-- SPIL -->
 <div id="gameContainer" style="display: none;">
-<!-- Popup med regler -->
-<div id="popup" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-<div class="bg-gray-500 p-8 rounded-2xl max-w-lg text-center shadow-xl">
-<h2 class="text-2xl text-gray-700 font-bold mb-4">How to move:</h2>
-<ul class="text-left list-disc text-4xl list-inside mb-6 text-gray-700">
-<li>Press <span class="font-semibold">space</span> to move forward</li>
-<li>Release space to stop moving</li>
-<li>Take a pill to alter the experience</li>
-<li>You can only move forward</li>
-</ul>
-<button id="closePopup" class="text-gray-500 text-3xl font-bold py-2 px-6 rounded-lg hover:scale-105 transition">
-Okay, I understand!
-</button>
-</div>
-</div>
+  <!-- Popup -->
+  <div id="popup" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+    <div class="bg-gray-500 p-8 rounded-2xl max-w-lg text-center shadow-xl">
+      <h2 class="text-2xl text-gray-700 font-bold mb-4">How to move:</h2>
+      <ul class="text-left list-disc text-4xl list-inside mb-6 text-gray-700">
+        <li>Press <span class="font-semibold">space</span> to move forward</li>
+        <li>Release space to stop moving</li>
+        <li>Take a pill to alter the experience</li>
+        <li>You can only move forward</li>
+      </ul>
+      <button id="closePopup" class="text-gray-500 text-3xl font-bold py-2 px-6 rounded-lg hover:scale-105 transition">
+        Okay, I understand!
+      </button>
+    </div>
+  </div>
 
-<!-- Pill Counter -->
-<div style="position: fixed; top: 20px; right: 5px; display: flex; flex-direction: column; align-items: center; gap: 0;">
-<div id="spaceCounter"
-style="background: rgba(0,0,0,0.6); color: #858c9e;
-padding: 6px 8px; border-radius: 8px;
-font-family: sans-serif; font-weight: bold; font-size: 1.8vw;
-text-align: center;
-white-space: nowrap;
-box-shadow: 0 0 10px rgba(0,0,0,0.8);">
-Pill Counter: 0
-</div>
-<img id="pillImage"
-src="Billeder/PillerALLE.svg"
-alt="Pill Icon"
-style="width: min(25vw, 300px); height: auto; margin-top: -25px;">
-</div>
+  <!-- Pill Counter -->
+  <div style="position: fixed; top: 20px; right: 5px; display: flex; flex-direction: column; align-items: center; gap: 0;">
+    <div id="spaceCounter"
+      style="background: rgba(0,0,0,0.6); color: #858c9e;
+      padding: 6px 8px; border-radius: 8px;
+      font-family: sans-serif; font-weight: bold; font-size: 1.8vw;
+      text-align: center;
+      white-space: nowrap;
+      box-shadow: 0 0 10px rgba(0,0,0,0.8);">
+      Pill Counter: 0
+    </div>
+    <img id="pillImage"
+      src="Billeder/PillerALLE.svg"
+      alt="Pill Icon"
+      style="width: min(25vw, 300px); height: auto; margin-top: -25px;">
+  </div>
 </div>
 
 <script>
-// Start knap - skjul forside, vis spil
+// Når man klikker på start
 document.getElementById('startBtn').onclick = () => {
-document.getElementById('frontpage').style.display = 'none';
-document.getElementById('gameContainer').style.display = 'block';
+  const frontpage = document.getElementById('frontpage');
+  const gameContainer = document.getElementById('gameContainer');
+  const video = document.getElementById('bgVideo');
+
+  // Fade video ud
+  video.classList.add('fade-out');
+
+  // Vent til animation er færdig, så fjern videoen
+  setTimeout(() => {
+    video.pause();
+    video.remove(); // helt væk fra DOM
+    frontpage.style.display = 'none';
+    gameContainer.style.display = 'block';
+  }, 1000); // 1 sekund (samme som i CSS)
 };
 </script>
 
