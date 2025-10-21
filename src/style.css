@@ -2,12 +2,35 @@
 @tailwind components;
 @tailwind utilities;
 
+
+/* --- Egen font --- */
+@font-face {
+  font-family: 'MinFont';
+  src: url('/public/Fonts/font.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* Tilføj fonten som en Tailwind layer */
+@layer base {
+  * {
+    font-family: 'MinFont', sans-serif;
+  }
+  
+  body {
+    font-family: 'MinFont', sans-serif;
+  }
+}
+
+/* Brug den globalt */
 body {
+  font-family: 'MinFont', sans-serif;
   margin: 0;
- display: flex;
- place-items: center;
- min-width: 320px;
- min-height: 100px;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100px;
+
 }
 
 .start-button {

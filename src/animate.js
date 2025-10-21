@@ -162,7 +162,7 @@ export function startAnimation(scene, camera, spiller, globals, renderer) {
         globals.stage8VideoTriggered = true;
         globals.stage8Active = false;
         console.log("🎬 Slutning 2 triggered ved Y =", spiller.position.y);
-        playVideo('slutning2.mov');
+        playVideo('slutning2.mp4');
         return;
       }
     }
