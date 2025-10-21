@@ -6,7 +6,7 @@
 /* --- Egen font --- */
 @font-face {
   font-family: 'MinFont';
-  src: url('Fonts/font.ttf') format('truetype');
+  src: url('/Fonts/font.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
