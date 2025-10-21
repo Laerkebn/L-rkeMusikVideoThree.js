@@ -16,7 +16,8 @@ export default class Sound {
     init() {
         this.camera.add(this.listener);
         this.sound = new THREE.Audio(this.listener);
-        this.loadSound('lyd/test.mp3');
+        this.loadSound('lyd/farve.mp3');
+
     }
 
     loadSound(url) {
