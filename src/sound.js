@@ -1,6 +1,5 @@
 import './style.css';
 import * as THREE from 'three';
-import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls.js';
 
 export default class Sound {
     constructor(camera) {
@@ -10,31 +9,41 @@ export default class Sound {
         this.sound = new THREE.Audio(this.listener);
         this.isplaying = false;
         this.soundloaded = false;
-        this.init();    
-    }
-
-    init() {
         this.camera.add(this.listener);
-        this.sound = new THREE.Audio(this.listener);
-        this.loadSound('lyd/farve.mp3');
-
     }
+    
+    // FJERNET init() - den er ikke nødvendig
 
     loadSound(url) {
-        this.loader.load(url, (buffer) => {
-            this.sound.setBuffer(buffer);
-            this.sound.setVolume(0.5);
-            this.soundloaded = true;
-        });
+        console.log('🎵 Loader lyd fra:', url);
+        this.loader.load(
+            url, 
+            (buffer) => {
+                this.sound.setBuffer(buffer);
+                this.sound.setLoop(true); // Loop lyden
+                this.sound.setVolume(0.5);
+                this.soundloaded = true;
+                console.log('✅ Lyd indlæst:', url);
+            },
+            (xhr) => {
+                console.log('⏳ Loading:', (xhr.loaded / xhr.total * 100) + '%');
+            },
+            (error) => {
+                console.error('❌ Fejl ved indlæsning af lyd:', url, error);
+            }
+        );
     }
-   playSound() {
-    if(!this.isplaying && this.soundloaded) {
-        this.sound.play();
-        this.isplaying = true;
+
+    playSound() {
+        if (!this.isplaying && this.soundloaded) {
+            this.sound.play();
+            this.isplaying = true;
+            console.log('▶️ Afspiller lyd');
+        }
     }
-   }
+
     pauseSound() {
-        if(this.isplaying) {
+        if (this.isplaying) {
             this.sound.pause();
             this.isplaying = false;
         }

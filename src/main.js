@@ -53,11 +53,25 @@ window.addEventListener('resize', () => {
 });
 
 // Lyd setup
-const soundFarve = new Sound(camera);  // den primære lyd
-soundFarve.loadSound('lyd/farve.mp3'); 
+const soundFarve = new Sound(camera);
+soundFarve.loadSound('lyd/farve.mp3');  // Loader farve lyd
 
-const soundGraa = new Sound(camera);   // den alternative lyd
-soundGraa.loadSound('lyd/graa.mp3');
+const soundGraa = new Sound(camera);
+soundGraa.loadSound('lyd/graa.mp3');    // Loader grå lyd
+
+// Start grå lyd automatisk ved første klik
+let firstLock = true;
+controls.addEventListener('lock', () => {
+  if (firstLock) {
+    soundGraa.playSound();
+    firstLock = false;
+  }
+});
+
+// Klik for at aktivere PointerLock
+document.body.addEventListener('click', () => {
+  controls.lock();
+});
 
 // Globale variabler, som keyboard.js og animate kan bruge
 const globals = {
