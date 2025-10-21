@@ -29,7 +29,7 @@ export function setupKeyboard(scene, globals) {
 
       if (globals.spaceCount < maxSpace) {
         globals.spaceCount++;
-        globals.counterDiv.textContent = `Pills Counter: ${globals.spaceCount}`;
+        globals.counterDiv.textContent = `Pill Counter: ${globals.spaceCount}`;
 
         // Skift pillebillede
 const pillImage = document.getElementById("pillImage");
