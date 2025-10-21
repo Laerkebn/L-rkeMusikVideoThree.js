@@ -11,8 +11,9 @@ export function startAnimation(scene, camera, spiller, globals, renderer) {
   const triggerRadius = 10; 
   // Trigger for slutning 2 (y-koordinat)
   const triggerYCoordinate = 70;
+
   let videoTriggered = false;
-  let videoTriggered2 = false; // For y-koordinat trigger
+  let videoTriggered2 = false; 
   let videoPlaying = false;
   let instructionTextElement = null;
 
@@ -75,7 +76,7 @@ export function startAnimation(scene, camera, spiller, globals, renderer) {
     }
   }
 
-  // 🎥 Funktion til at afspille video - nu med parameter for filnavn
+  // 🎥 Funktion til at afspille video 
   function playVideo(videoFileName = 'test.mp4') {
     console.log("🎥 playVideo() function called with:", videoFileName);
     setVideoPlaying(true);
@@ -101,7 +102,7 @@ export function startAnimation(scene, camera, spiller, globals, renderer) {
       max-width: 90%;
       max-height: 90%;
     `;
-    const videoPath = `lyd/${videoFileName}`;
+    const videoPath = `video/${videoFileName}`;
     console.log("Trying to load video from:", videoPath);
     video.src = videoPath;
     video.controls = true;
@@ -145,7 +146,7 @@ export function startAnimation(scene, camera, spiller, globals, renderer) {
   function animate() {
     requestAnimationFrame(animate);
 
-    // 💡 Tjek om video spiller
+    // 💡 Tjek om video spiller 
     if (videoPlaying) {
       renderer.render(scene, camera);
       return; // stop alt andet mens video kører
@@ -156,13 +157,13 @@ export function startAnimation(scene, camera, spiller, globals, renderer) {
       const upwardSpeed = 0.07;
       spiller.position.y += upwardSpeed;
 
-      // Tjek om spilleren har nået y-koordinat triggeren
+     // Tjek om spilleren har nået y-koordinat triggeren
       if (spiller.position.y >= triggerYCoordinate && !videoTriggered2) {
         videoTriggered2 = true;
         globals.stage8VideoTriggered = true;
-        globals.stage8Active = false;
         console.log("🎬 Slutning 2 triggered ved Y =", spiller.position.y);
         playVideo('slutning2.mp4');
+        globals.stage8Active = false;  // Sæt til false EFTER video-kaldet
         return;
       }
     }
